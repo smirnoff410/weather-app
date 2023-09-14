@@ -4,3 +4,5 @@ WeatherDesktop/bin
 WeatherDesktop/obj
 WeatherBackend/obj
 .vs
+After/WeatherBackend/obj
+Before/WeatherBackend/obj

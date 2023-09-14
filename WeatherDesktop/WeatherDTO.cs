@@ -4,17 +4,13 @@ namespace WeatherDesktop
 {
     public class WeatherDTO
     {
-        public DateOnly Date { get; set; }
-
-        public int TemperatureC { get; set; }
-
-        public int TemperatureF { get; set; }
-
+        public DateTime Date { get; set; }
+        public int Temperature { get; set; }
         public string? Summary { get; set; }
 
         public override string ToString()
         {
-            return $"{Date}. TemperatureC: {TemperatureC}. TemperatureF: {TemperatureF}. Summary: {Summary}";
+            return $"{Date}. TemperatureC: {Temperature}. Summary: {Summary}";
         }
     }
 }
