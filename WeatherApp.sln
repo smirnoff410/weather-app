@@ -3,9 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.4.33213.308
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherBackend", "WeatherBackend\WeatherBackend.csproj", "{DB7D6262-5232-4951-9E4B-08BC57AA2AE2}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherDesktop", "WeatherDesktop\WeatherDesktop.csproj", "{F39892B5-71AF-49C1-BA80-2BF9038C8A1B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherBackendBefore", "Before\WeatherBackend\WeatherBackendBefore.csproj", "{6651F5C4-44A6-41F9-A66C-642B918CBF22}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "WeatherBackendAfter", "After\WeatherBackend\WeatherBackendAfter.csproj", "{06E8EFA8-D36E-41FD-860F-3444F96CCDA7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -13,14 +15,18 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DB7D6262-5232-4951-9E4B-08BC57AA2AE2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DB7D6262-5232-4951-9E4B-08BC57AA2AE2}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DB7D6262-5232-4951-9E4B-08BC57AA2AE2}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DB7D6262-5232-4951-9E4B-08BC57AA2AE2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F39892B5-71AF-49C1-BA80-2BF9038C8A1B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F39892B5-71AF-49C1-BA80-2BF9038C8A1B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F39892B5-71AF-49C1-BA80-2BF9038C8A1B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F39892B5-71AF-49C1-BA80-2BF9038C8A1B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6651F5C4-44A6-41F9-A66C-642B918CBF22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6651F5C4-44A6-41F9-A66C-642B918CBF22}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6651F5C4-44A6-41F9-A66C-642B918CBF22}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6651F5C4-44A6-41F9-A66C-642B918CBF22}.Release|Any CPU.Build.0 = Release|Any CPU
+		{06E8EFA8-D36E-41FD-860F-3444F96CCDA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{06E8EFA8-D36E-41FD-860F-3444F96CCDA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{06E8EFA8-D36E-41FD-860F-3444F96CCDA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{06E8EFA8-D36E-41FD-860F-3444F96CCDA7}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
