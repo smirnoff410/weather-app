@@ -2,3 +2,5 @@
 WeatherBackend/obj/Debug
 WeatherDesktop/bin
 WeatherDesktop/obj
+WeatherBackend/obj
+.vs
