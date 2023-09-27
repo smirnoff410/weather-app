@@ -11,7 +11,7 @@
             {
                 var midTemperature = (MinTemperature + MaxTemperature) / 2;
                 return midTemperature <= 0
-                    ? EWeatherForecastType.Home : midTemperature / 2 > 0 && midTemperature / 2 <= 25
+                    ? EWeatherForecastType.Home : midTemperature > 0 && midTemperature <= 25
                     ? EWeatherForecastType.Walk : EWeatherForecastType.Swim;
             }
         }

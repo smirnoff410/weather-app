@@ -6,3 +6,5 @@ WeatherBackend/obj
 .vs
 After/WeatherBackend/obj
 Before/WeatherBackend/obj
+WeatherTests/bin
+WeatherTests/obj
