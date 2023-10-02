@@ -1,8 +1,9 @@
 ﻿namespace WeatherBackendAfter.Services.WeatherService
 {
+    using WeatherBackend.Services.WeatherService;
     using WeatherBackendAfter.History.Models;
     using WeatherBackendAfter.WeatherForecast.Models;
-    public class WeatherService
+    public class WeatherService : IWeatherService
     {
         private readonly string[] Summaries = new[]
         {

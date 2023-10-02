@@ -1,14 +1,83 @@
-# Лабораторная №3
-## Модульные тесты
+# Лабораторная №2
+## Отношения между классами
 
-Модульное тестирование - процесс в программировании, позволяющий проверить на корректность отдельные модули исходного кода программы, наборы из одного или более программных модулей вместе с соответствующими управляющими данными, процедурами использования и обработки.
+#### Наследование:
+```
+public class WeatherHistory
+{
+    public DateOnly Date { get; set; }
+    public int MinTemperature { get; set; }
+    public int MaxTemperature { get; set; }
+}
+public class WeatherForecastFuture : WeatherHistory
+{
+    public City City { get; set; }
+}
+```
+![Alt text](image.png)
 
-Идея состоит в том, чтобы писать тесты для каждой нетривиальной функции или метода. Это позволяет достаточно быстро проверить, не привело ли очередное изменение кода к регрессии, то есть к появлению ошибок в уже оттестированных местах программы, а также облегчает обнаружение и устранение таких ошибок. Например, обновить используемую в проекте библиотеку до актуальной версии можно в любой момент, прогнав тесты и выявив несовместимости.
+#### Реализация:
+```
+public interface IWeatherService
+{
+    IEnumerable<WeatherForecast> GenerateForCurrentDay(int toHours);
+    IEnumerable<WeatherHistory> GenerateHistory(DateTime fromDate, DateTime toDate);
+}
+public class WeatherService : IWeatherService
+{
+    public IEnumerable<WeatherForecast> GenerateForCurrentDay(int toHours)
+    {
+        
+    }
+
+    public IEnumerable<WeatherHistory> GenerateHistory(DateTime fromDate, DateTime toDate)
+    {
+        
+    }
+}
+```
+![Alt text](image-1.png)
+
+#### Ассоциация:
+```
+public class City
+{
+    public Guid ID { get; set; }
+    public string Name { get; set; }
+}
+public class WeatherForecastFuture
+{
+    public City City { get; set; }
+}
+```
+![Alt text](image-2.png)
+
+#### Композиция:
+```
+public class WeatherForecastController
+{
+    private readonly IWeatherService _weatherService;
+    public WeatherForecastController()
+    {
+        _weatherService = new WeatherService();
+    }
+}
+```
+![Alt text](image-3.png)
+
+#### Агрегация:
+```
+public class WeatherForecastController
+{
+    private readonly ICityRepository _cityRepository;
+    public WeatherForecastController(ICityRepository cityRepository)
+    {
+        _cityRepository = cityRepository;
+    }
+}
+```
+![Alt text](image-4.png)
+
 
 ### Задание: 
-Добавить к своему проекту unit-тесты, которые покрывали какой нибудь модуль.
-
-### Пример:
-В примере создан проект типа xUnit - WeatherTests. В проекте используется библиотека Bogus, которая позволяет генерировать случайные значения. xUnit позволяет генерировать дополнительные тесты, если необходимо один и тот же функционал проверить на разных входных данных с помощью атрибута [Theory]. Односложные тесты помечаются атрибутом [Fact].
-
-Для имитирования какой-либоу функциональности и создания мок-объектов используют Mock библиотеки. Для C# например существует библиотека Moq.
+Создать UML диаграмму отношений классов своего проекта. Реализовать каждый вид связи.

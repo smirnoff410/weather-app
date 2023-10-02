@@ -2,22 +2,23 @@
 
 namespace WeatherBackendAfter.City.Controllers
 {
+    using WeatherBackend.City.Models;
+    using WeatherBackend.City.Repository;
+
+    [ApiController]
+    [Route("[controller]")]
     public class CityController : ControllerBase
     {
-        private readonly Dictionary<Guid, string> _cities = new()
-        {
-            { Guid.NewGuid(), "Volgograd" },
-            { Guid.NewGuid(), "Moscow" },
-            { Guid.NewGuid(), "Saint-Petersburg" },
-            { Guid.NewGuid(), "Ekaterinburg" },
-            { Guid.NewGuid(), "Vladivostok" },
-            { Guid.NewGuid(), "Kaliningrad" }
-        };
+        private readonly ICityRepository _cityRepository;
 
-        [HttpGet("")]
-        public Dictionary<Guid, string> GetCities()
+        public CityController(ICityRepository cityRepository)
         {
-            return _cities;
+            _cityRepository = cityRepository;
+        }
+        [HttpGet("")]
+        public IEnumerable<City> GetCities()
+        {
+            return _cityRepository.List();
         }
     }
 }
