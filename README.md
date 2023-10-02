@@ -2,7 +2,7 @@
 ## Отношения между классами
 
 #### Наследование:
-```
+```csharp
 public class WeatherHistory
 {
     public DateOnly Date { get; set; }
@@ -17,7 +17,7 @@ public class WeatherForecastFuture : WeatherHistory
 ![Alt text](image.png)
 
 #### Реализация:
-```
+```csharp
 public interface IWeatherService
 {
     IEnumerable<WeatherForecast> GenerateForCurrentDay(int toHours);
@@ -39,7 +39,7 @@ public class WeatherService : IWeatherService
 ![Alt text](image-1.png)
 
 #### Ассоциация:
-```
+```csharp
 public class City
 {
     public Guid ID { get; set; }
@@ -53,7 +53,7 @@ public class WeatherForecastFuture
 ![Alt text](image-2.png)
 
 #### Композиция:
-```
+```csharp
 public class WeatherForecastController
 {
     private readonly IWeatherService _weatherService;
@@ -66,7 +66,7 @@ public class WeatherForecastController
 ![Alt text](image-3.png)
 
 #### Агрегация:
-```
+```csharp
 public class WeatherForecastController
 {
     private readonly ICityRepository _cityRepository;
