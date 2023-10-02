@@ -81,3 +81,6 @@ public class WeatherForecastController
 
 ### Задание: 
 Создать UML диаграмму отношений классов своего проекта. Реализовать каждый вид связи.
+
+### Подробности:
+https://metanit.com/sharp/patterns/1.2.php
