@@ -16,9 +16,15 @@ namespace WeatherBackendAfter.City.Controllers
             _cityRepository = cityRepository;
         }
         [HttpGet("")]
-        public IEnumerable<City> GetCities()
+        public async Task<IEnumerable<City>> GetCities()
         {
-            return _cityRepository.List();
+            return await _cityRepository.List();
+        }
+
+        [HttpPost("[action]")]
+        public async Task<Guid> Create(CreateCityDTO dto)
+        {
+            return await _cityRepository.Create(dto);
         }
     }
 }

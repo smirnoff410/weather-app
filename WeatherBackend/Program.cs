@@ -1,5 +1,6 @@
 using WeatherBackend.City.Repository;
 using WeatherBackend.Services.WeatherService;
+using WeatherBackend.Settings;
 using WeatherBackendAfter.Services.WeatherService;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +13,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<ICityRepository, CityRepository>();
 builder.Services.AddScoped<IWeatherService, WeatherService>();
+builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));
 
 var app = builder.Build();
 

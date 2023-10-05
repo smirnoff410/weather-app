@@ -3,6 +3,7 @@
     using WeatherBackend.City.Models;
     public interface ICityRepository
     {
-        IEnumerable<City> List();
+        Task<IEnumerable<City>> List();
+        Task<Guid> Create(CreateCityDTO dto);
     }
 }

@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace WeatherBackendAfter.WeatherForecast.Controllers
 {
+    using Microsoft.Data.SqlClient;
     using WeatherBackend.City.Repository;
     using WeatherBackend.Services.WeatherService;
     using WeatherBackend.WeatherForecast.Models;
@@ -20,10 +21,10 @@ namespace WeatherBackendAfter.WeatherForecast.Controllers
         }
 
         [HttpGet("[action]")]
-        public IEnumerable<WeatherForecastFuture> ListFuture()
+        public async Task<IEnumerable<WeatherForecastFuture>> ListFuture()
         {
             var response = new List<WeatherForecastFuture>();
-            foreach(var city in _cityRepository.List())
+            foreach(var city in await _cityRepository.List())
             {
                 var forecasts = _weatherService.GenerateHistory(DateTime.UtcNow, DateTime.UtcNow.AddDays(3)).ToList();
                 foreach(var forecast in forecasts)
@@ -38,6 +39,23 @@ namespace WeatherBackendAfter.WeatherForecast.Controllers
         public IEnumerable<WeatherForecast> Current()
         {
             return _weatherService.GenerateForCurrentDay(24).ToArray();
+        }
+
+        [HttpPost("[action]")]
+        public async Task<Guid> CreateCurrent(CreateWeatherForecastDTO dto)
+        {
+            string connectionString = "Server=DESKTOP-LFM3LHR\\SQLEXPRESS;Database=WeatherDatabase;Trusted_Connection=True;Encrypt=false";
+            var sqlConnection = new SqlConnection(connectionString);
+
+            await sqlConnection.OpenAsync();
+            var id = Guid.NewGuid();
+            var insertCommand = new SqlCommand($"insert into [dbo].[WeatherForecasts] values ('{id}', {dto.Temperature}, '{dto.Summary}', '{DateTime.UtcNow}', '{dto.CityID}')", sqlConnection);
+
+            await insertCommand.ExecuteNonQueryAsync();
+
+            await sqlConnection.CloseAsync();
+
+            return id;
         }
     }
 }
