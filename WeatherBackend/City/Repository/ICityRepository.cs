@@ -5,5 +5,7 @@
     {
         Task<IEnumerable<City>> List();
         Task<Guid> Create(CreateCityDTO dto);
+        Task Update(Guid id, UpdateCityDTO dto);
+        Task Delete(Guid id);
     }
 }

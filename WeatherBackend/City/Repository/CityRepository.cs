@@ -29,6 +29,18 @@
             return id;
         }
 
+        public async Task Delete(Guid id)
+        {
+            var sqlConnection = new SqlConnection(_databaseSettings.ConnectionString);
+
+            await sqlConnection.OpenAsync();
+            var insertCommand = new SqlCommand($"delete from [dbo].[Cities] where ID = '{id}'", sqlConnection);
+
+            await insertCommand.ExecuteNonQueryAsync();
+
+            await sqlConnection.CloseAsync();
+        }
+
         public async Task<IEnumerable<City>> List()
         {
             var result = new List<City>();
@@ -68,6 +80,18 @@
             await sqlConnection.CloseAsync();
 
             return result;
+        }
+
+        public async Task Update(Guid id, UpdateCityDTO dto)
+        {
+            var sqlConnection = new SqlConnection(_databaseSettings.ConnectionString);
+
+            await sqlConnection.OpenAsync();
+            var insertCommand = new SqlCommand($"update [dbo].[Cities] set [Name] = '{dto.Name}' where ID = '{id}'", sqlConnection);
+
+            await insertCommand.ExecuteNonQueryAsync();
+
+            await sqlConnection.CloseAsync();
         }
     }
 }

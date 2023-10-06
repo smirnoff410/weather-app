@@ -1,86 +1,26 @@
-# Лабораторная №2
-## Отношения между классами
+# Лабораторная работа №2
+## CRUD сущности с помощью языка высокого уровня
 
-#### Наследование:
+#### Библиотека для C#
+Для выполнения sql запросов на C# можно использовать библиотеку Microsoft.Data.SqlClient
+Для этого достаточно в файле проекта с расширением .csproj прописать следующие строчки 
 ```csharp
-public class WeatherHistory
+<ItemGroup>
+    <PackageReference Include="Microsoft.Data.SqlClient" Version="5.1.1" />
+</ItemGroup>
+```
+
+Запросы к БД происходят в классе CityRepository, для которого определен следующий интерфейс
+```csharp
+public interface ICityRepository
 {
-    public DateOnly Date { get; set; }
-    public int MinTemperature { get; set; }
-    public int MaxTemperature { get; set; }
-}
-public class WeatherForecastFuture : WeatherHistory
-{
-    public City City { get; set; }
+    Task<IEnumerable<City>> List();
+    Task<Guid> Create(CreateCityDTO dto);
+    Task Update(Guid id, UpdateCityDTO dto);
+    Task Delete(Guid id);
 }
 ```
-![Alt text](image.png)
 
-#### Реализация:
-```csharp
-public interface IWeatherService
-{
-    IEnumerable<WeatherForecast> GenerateForCurrentDay(int toHours);
-    IEnumerable<WeatherHistory> GenerateHistory(DateTime fromDate, DateTime toDate);
-}
-public class WeatherService : IWeatherService
-{
-    public IEnumerable<WeatherForecast> GenerateForCurrentDay(int toHours)
-    {
-        
-    }
+### Задание
+Добавить взаимодействие с базой данных на языке высокого уровня и реализовать CRUD для сущности.
 
-    public IEnumerable<WeatherHistory> GenerateHistory(DateTime fromDate, DateTime toDate)
-    {
-        
-    }
-}
-```
-![Alt text](image-1.png)
-
-#### Ассоциация:
-```csharp
-public class City
-{
-    public Guid ID { get; set; }
-    public string Name { get; set; }
-}
-public class WeatherForecastFuture
-{
-    public City City { get; set; }
-}
-```
-![Alt text](image-2.png)
-
-#### Композиция:
-```csharp
-public class WeatherForecastController
-{
-    private readonly IWeatherService _weatherService;
-    public WeatherForecastController()
-    {
-        _weatherService = new WeatherService();
-    }
-}
-```
-![Alt text](image-3.png)
-
-#### Агрегация:
-```csharp
-public class WeatherForecastController
-{
-    private readonly ICityRepository _cityRepository;
-    public WeatherForecastController(ICityRepository cityRepository)
-    {
-        _cityRepository = cityRepository;
-    }
-}
-```
-![Alt text](image-4.png)
-
-
-### Задание: 
-Создать UML диаграмму отношений классов своего проекта. Реализовать каждый вид связи.
-
-### Подробности:
-https://metanit.com/sharp/patterns/1.2.php

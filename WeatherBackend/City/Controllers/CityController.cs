@@ -26,5 +26,17 @@ namespace WeatherBackendAfter.City.Controllers
         {
             return await _cityRepository.Create(dto);
         }
+
+        [HttpPut("[action]/{id:guid}")]
+        public async Task Update(Guid id, UpdateCityDTO dto)
+        {
+            await _cityRepository.Update(id, dto);
+        }
+
+        [HttpDelete("[action]/{id:guid}")]
+        public async Task Delete(Guid id)
+        {
+            await _cityRepository.Delete(id);
+        }
     }
 }
