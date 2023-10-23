@@ -7,12 +7,14 @@ RabbitMQ - это брокер сообщений, позволяющий отп
 ### Шаги
 1)	Установить и настроить RabbitMQ на локальном компьютере
 2)	Познакомиться с Web-интерфейсом брокера сообщений
-3)	Познакомиться с основными обменниками(Exchanges) RabbitMQ
-•	 Default Exchange
-•	 Direct Exchange
-•	 Topic Exchange
-•	 Fanout Exchange
+3)	Познакомиться с основными обменниками(Exchanges) RabbitMQ:
+- Default Exchange
+- Direct Exchange
+- Topic Exchange
+- Fanout Exchange
 
 ### Задание
 Внедрить в свою систему брокер сообщений для взаимодействия между компонентами приложения
+
+#### Методичка по RabbitMQ лежит в корне репозитория
 
