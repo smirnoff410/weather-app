@@ -15,7 +15,8 @@ RabbitMQ - это брокер сообщений, позволяющий отп
 
 ### Пример
 ![Alt text](image.png)
-Инициализация подключения к брокеру лежит в WeatherCommon.Services.MessageQueue.RabbitMessageQueue
+
+Инициализация подключения к брокеру лежит в **WeatherCommon.Services.MessageQueue.RabbitMessageQueue**
 ```csharp
 public class RabbitMessageQueue : IMessageQueue
 {
@@ -57,14 +58,14 @@ public class RabbitMessageQueue : IMessageQueue
 ```
 В конструкторе происходит подключение к RabbitMQ и реализуются базовые методы для публикации сообщения в очередь и подписки на сообщения
 
-В проекте WeatherGrabber происходит отправка сообщения
-Код из класса WeatherGrabber.Worker
+В проекте **WeatherGrabber** происходит отправка сообщения
+Код из класса **WeatherGrabber.Worker**
 ```csharp
 var message = "Hello from RabbitMQ";
 _messageQueue.Publish(MessageQueueRouteEnum.WeatherChangeAlert, message);
 ```
-В проекте WeatherTelegramService происходит подписка на сообщения из очереди
-Код из класса WeatherTelegramService.Program
+В проекте **WeatherTelegramService** происходит подписка на сообщения из очереди
+Код из класса **WeatherTelegramService.Program**
 ```csharp
 messageQueue.Subscribe(MessageQueueRouteEnum.WeatherChangeAlert, serviceProvider.GetRequiredService<IBaseHandler<string>>());
 ```
