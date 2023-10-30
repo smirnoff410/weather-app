@@ -8,9 +8,7 @@
 
 ### Порождающие
 Отвечают за удобное и безопасное создание новых объектов или даже целых семейств объектов.
-В проекте реализован паттерн Строитель. 
-
-[WeatherTelegramService.Services.ServiceBuilder](https://github.com/smirnoff410/weather-app/blob/oop/Lab3/WeatherTelegramService/Services/ServiceBuilder/ServiceProviderBuilder.cs)
+В проекте реализован паттерн Строитель. [WeatherTelegramService.Services.ServiceBuilder](https://github.com/smirnoff410/weather-app/blob/oop/Lab3/WeatherTelegramService/Services/ServiceBuilder/ServiceProviderBuilder.cs)
 
 Использование в проекте
 
@@ -24,9 +22,7 @@ spBuilder
 
 ### Структурные
 Отвечают за построение удобных в поддержке иерархий классов.
-В проекте реализован паттер Фасад.
-
-[WeatherTelegramService.Services.FollowCityFacade](https://github.com/smirnoff410/weather-app/blob/oop/Lab3/WeatherTelegramService/Services/FollowCityFacade/FollowCityFacadeService.cs)
+В проекте реализован паттер Фасад. [WeatherTelegramService.Services.FollowCityFacade](https://github.com/smirnoff410/weather-app/blob/oop/Lab3/WeatherTelegramService/Services/FollowCityFacade/FollowCityFacadeService.cs)
 
 Использование в проекте
 
@@ -37,9 +33,7 @@ await followCityService.Operation(chatId, messageText, $"{message.Chat.FirstName
 
 ### Поведенческие
 Решают задачи эффективного и безопасного взаимодействия между объектами программы.
-В проекте реализован паттерн Команда.
-
-[WeatherCommon.Services.Command](https://github.com/smirnoff410/weather-app/blob/oop/Lab3/WeatherCommon/Services/Command/ICommand.cs)
+В проекте реализован паттерн Команда. [WeatherCommon.Services.Command](https://github.com/smirnoff410/weather-app/blob/oop/Lab3/WeatherCommon/Services/Command/ICommand.cs)
 
 Использование в проекте
 ```csharp
