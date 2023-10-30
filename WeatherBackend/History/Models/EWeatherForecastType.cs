@@ -1,4 +1,4 @@
-﻿namespace WeatherBackendAfter.History.Models
+﻿namespace WeatherBackend.History.Models
 {
     public enum EWeatherForecastType
     {

@@ -1,76 +1,46 @@
-# Лабораторная работа №4
-## RabbitMQ
+# Лабораторная работа №3
+## Database First, Code First
 
-### Определение
-RabbitMQ - это брокер сообщений, позволяющий отправлять и принимать сообщения в различных компонентах вашей системы. RabbitMQ использует свой собственный протокол AMQP который работает поверх TCP/IP. Официальный сайт, на котором есть соответствующая документация и примеры кода на разных языках находится по адресу https://www.rabbitmq.com/
+### Database First
+Database First - подход для управления контекстом Entity Framework на основе существующей базы данных
 
-### Шаги
-1)	Установить и настроить RabbitMQ на локальном компьютере
-2)	Познакомиться с Web-интерфейсом брокера сообщений
-3)	Познакомиться с основными обменниками(Exchanges) RabbitMQ:
-- Default Exchange
-- Direct Exchange
-- Topic Exchange
-- Fanout Exchange
+Для использования необходимо: 
+- С помощью консоли диспетчера пакетов установить инструмент Install-Package Microsoft.EntityFrameworkCore.Tools
+- Добавить Nuget пакет Microsoft.EntityFrameworkCore.Design
+- Добавить Nuget пакет поставщика баз данных (SqlServer, PostgreSQL и т.д.)
 
-### Пример
-![Alt text](image.png)
+С помощью консоли диспетчера пакетов в Visual Studio выполнить реконструкцию контекста, например следующей командой:
+Scaffold-DbContext "Server=DESKTOP-LFM3LHR\SQLEXPRESS;Database=WeatherDatabase;Trusted_Connection=True;Encrypt=false" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -f
 
-Инициализация подключения к брокеру лежит в **WeatherCommon.Services.MessageQueue.RabbitMessageQueue**
+Подробнее о Scaffold: https://learn.microsoft.com/ru-ru/ef/core/managing-schemas/scaffolding/?tabs=vs
+
+### Code First
+Code First - подход для управления базой данных на основе контекста EntityFramework
+
+Для использования необходимо:
+- С помощью консоли диспетчера пакетов установить инструмент Install-Package Microsoft.EntityFrameworkCore.Tools
+- В контексте EntityFramework оставить только DbSet и конструктор
 ```csharp
-public class RabbitMessageQueue : IMessageQueue
+public partial class WeatherDatabaseContext : DbContext
 {
-    private readonly IModel _channel;
-
-    public RabbitMessageQueue()
-    {
-        var factory = new ConnectionFactory
-        {
-            Uri = new Uri("amqp://weather_user:weather_user@localhost:5672")
-        };
-
-        var connection = factory.CreateConnection();
-        _channel = connection.CreateModel();
-    }
-    public void Publish<T>(MessageQueueRouteEnum routingKey, T data)
-    {
-        var dataString = JsonSerializer.Serialize(data);
-        var body = Encoding.UTF8.GetBytes(dataString);
-        _channel.BasicPublish(string.Empty, routingKey.ToString(), null, body);
-    }
-
-    public void Subscribe<T>(MessageQueueRouteEnum routingKey, IBaseHandler<T> handler)
-    {
-        var queueName = _channel.QueueDeclare(routingKey.ToString(), false, false, false, null);
-
-        var consumer = new EventingBasicConsumer(_channel);
-        consumer.Received += (model, ea) =>
-        {
-            var body = ea.Body.ToArray();
-            var message = Encoding.UTF8.GetString(body);
-            var data = JsonSerializer.Deserialize<T>(message);
-            if (data != null)
-                handler.Handle(data);
-        };
-        _channel.BasicConsume(routingKey.ToString(), true, consumer);
-    }
+    public virtual DbSet<City> Cities { get; set; }
+    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<Forecast> Forecasts { get; set; }
+    public WeatherDatabaseContext(DbContextOptions options) : base(options) { }
 }
 ```
-В конструкторе происходит подключение к RabbitMQ и реализуются базовые методы для публикации сообщения в очередь и подписки на сообщения
+- В классе Program добавить контекст в DI контейнер:
+```csharp
+builder.Services.AddDbContext<WeatherDatabaseContext>(options =>
+    options.UseSqlServer(builder.Configuration["DatabaseSettings:ConnectionString"]));
+```
+- Чтобы сгенерировать миграцию, в консоли диспетчера пакетов выполнить: Add-Migration InitialCreate
+- Для обновления базы данных все в той же консоли: Update-Database
 
-В проекте **WeatherGrabber** происходит отправка сообщения
-Код из класса **WeatherGrabber.Worker**
-```csharp
-var message = "Hello from RabbitMQ";
-_messageQueue.Publish(MessageQueueRouteEnum.WeatherChangeAlert, message);
-```
-В проекте **WeatherTelegramService** происходит подписка на сообщения из очереди
-Код из класса **WeatherTelegramService.Program**
-```csharp
-messageQueue.Subscribe(MessageQueueRouteEnum.WeatherChangeAlert, serviceProvider.GetRequiredService<IBaseHandler<string>>());
-```
+Между миграциями можно переключаться, тем самым понижать или повышать версию БД.
+Update-Database <migration_name>
+
+Подробнее о Code First: https://learn.microsoft.com/ru-ru/ef/core/get-started/overview/first-app?tabs=visual-studio
+
 ### Задание
-Внедрить в свою систему брокер сообщений для взаимодействия между компонентами приложения
-
-#### Методичка по RabbitMQ лежит в корне репозитория
-
+Для своего проекта выполнить 2 подхода. Если уже существует база данных, то легче сначала выполнить подход Database First, а потом на основе автоматически созданных классов создать новую базу данных с помощью подхода Code First

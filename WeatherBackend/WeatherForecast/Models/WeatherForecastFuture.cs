@@ -1,10 +1,11 @@
 ﻿namespace WeatherBackend.WeatherForecast.Models
 {
     using City.Models;
-    using WeatherBackendAfter.History.Models;
+    using WeatherBackend.History.Models;
+    using WeatherBackend.Models;
 
     public class WeatherForecastFuture : WeatherHistory
     {
-        public City City { get; set; }
+        public string City { get; set; }
     }
 }

@@ -1,5 +1,5 @@
 using Bogus;
-using WeatherBackendAfter.History.Models;
+using WeatherBackend.History.Models;
 
 namespace WeatherTests
 {

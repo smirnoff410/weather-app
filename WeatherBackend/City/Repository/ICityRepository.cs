@@ -1,6 +1,8 @@
-﻿namespace WeatherBackend.City.Repository
+﻿using WeatherBackend.City.Models;
+
+namespace WeatherBackend.City.Repository
 {
-    using WeatherBackend.City.Models;
+    using WeatherBackend.Models;
     public interface ICityRepository
     {
         Task<IEnumerable<City>> List();
