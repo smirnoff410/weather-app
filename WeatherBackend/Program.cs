@@ -17,7 +17,7 @@ builder.Services.AddScoped<ICityRepository, CityRepository>();
 builder.Services.AddScoped<IWeatherService, WeatherService>();
 builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("DatabaseSettings"));
 
-builder.Services.AddDbContextFactory<WeatherDatabaseContext>(options =>
+builder.Services.AddDbContext<WeatherDatabaseContext>(options =>
     options.UseSqlServer(builder.Configuration["DatabaseSettings:ConnectionString"]));
 
 var app = builder.Build();

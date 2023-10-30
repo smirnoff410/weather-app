@@ -14,5 +14,33 @@ Scaffold-DbContext "Server=DESKTOP-LFM3LHR\SQLEXPRESS;Database=WeatherDatabase;T
 
 Подробнее о Scaffold: https://learn.microsoft.com/ru-ru/ef/core/managing-schemas/scaffolding/?tabs=vs
 
+### Code First
+Code First - подход для управления базой данных на основе контекста EntityFramework
+
+Для использования необходимо:
+- С помощью консоли диспетчера пакетов установить инструмент Install-Package Microsoft.EntityFrameworkCore.Tools
+- В контексте EntityFramework оставить только DbSet и конструктор
+```csharp
+public partial class WeatherDatabaseContext : DbContext
+{
+    public virtual DbSet<City> Cities { get; set; }
+    public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<Forecast> Forecasts { get; set; }
+    public WeatherDatabaseContext(DbContextOptions options) : base(options) { }
+}
+```
+- В классе Program добавить контекст в DI контейнер:
+```csharp
+builder.Services.AddDbContext<WeatherDatabaseContext>(options =>
+    options.UseSqlServer(builder.Configuration["DatabaseSettings:ConnectionString"]));
+```
+- Чтобы сгенерировать миграцию, в консоли диспетчера пакетов выполнить: Add-Migration InitialCreate
+- Для обновления базы данных все в той же консоли: Update-Database
+
+Между миграциями можно переключаться, тем самым понижать или повышать версию БД.
+Update-Database <migration_name>
+
+Подробнее о Code First: https://learn.microsoft.com/ru-ru/ef/core/get-started/overview/first-app?tabs=visual-studio
+
 ### Задание
 Для своего проекта выполнить 2 подхода. Если уже существует база данных, то легче сначала выполнить подход Database First, а потом на основе автоматически созданных классов создать новую базу данных с помощью подхода Code First

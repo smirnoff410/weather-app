@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace WeatherBackend.Models;
 
-public partial class WeatherForecast
+public partial class Forecast
 {
     public Guid Id { get; set; }
 
