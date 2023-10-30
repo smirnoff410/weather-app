@@ -2,8 +2,8 @@
 using System.Text.Json;
 using System.Text;
 using RabbitMQ.Client.Events;
-using WeatherCommon.Services.Handlers;
 using WeatherCommon.Models.MessageQueue;
+using WeatherCommon.Services.Command;
 
 namespace WeatherCommon.Services.MessageQueue
 {
@@ -28,7 +28,7 @@ namespace WeatherCommon.Services.MessageQueue
             _channel.BasicPublish(string.Empty, routingKey.ToString(), null, body);
         }
 
-        public void Subscribe<T>(MessageQueueRouteEnum routingKey, IBaseHandler<T> handler)
+        public void Subscribe<T>(MessageQueueRouteEnum routingKey, ICommand<T> command)
         {
             var queueName = _channel.QueueDeclare(routingKey.ToString(), false, false, false, null);
 
@@ -39,7 +39,7 @@ namespace WeatherCommon.Services.MessageQueue
                 var message = Encoding.UTF8.GetString(body);
                 var data = JsonSerializer.Deserialize<T>(message);
                 if (data != null)
-                    handler.Handle(data);
+                    command.Execute(data);
             };
             _channel.BasicConsume(routingKey.ToString(), true, consumer);
         }

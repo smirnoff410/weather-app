@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Options;
 using WeatherCommon.Models.MessageQueue;
+using WeatherCommon.Models.Request;
 using WeatherCommon.Services.MessageQueue;
 using WeatherGrabber.Clients;
 using WeatherGrabber.Settings;
@@ -34,7 +35,7 @@ namespace WeatherGrabber
                 //var result = await _weatherClient.GetForecast("London");
 
                 var message = "Hello from RabbitMQ";
-                _messageQueue.Publish(MessageQueueRouteEnum.WeatherChangeAlert, message);
+                _messageQueue.Publish(MessageQueueRouteEnum.WeatherChangeAlert, new WeatherChangeAlertRequest(1, message));
                 Console.WriteLine("Sending message to my-queue-name");
 
                 /*

@@ -1,14 +1,12 @@
 using Telegram.Bot;
-using WeatherCommon.Models.MessageQueue;
-using WeatherCommon.Services.Handlers;
 using WeatherCommon.Services.MessageQueue;
 using WeatherTelegramService.Handlers;
 using WeatherTelegramService.Services.Telegram;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Configuration.Json;
 using WeatherTelegramService.Settings;
 using System.Text.Json;
-using Microsoft.Extensions.DependencyInjection;
+using WeatherCommon.Services.Command;
+using WeatherCommon.Models.Request;
+using WeatherTelegramService.Services.ServiceBuilder;
 
 namespace WeatherTelegramService
 {
@@ -20,16 +18,15 @@ namespace WeatherTelegramService
                 .ConfigureServices((configuration, services) =>
                 {
                     services.AddSingleton<IMessageQueue, RabbitMessageQueue>();
-                    services.AddSingleton<ITelegramReceiverService, TelegramReceiverService>();
-                    
                     services.AddSingleton<ITelegramBotClient>(x => new TelegramBotClient(GetTelegramBotTokenFromSecrets()));
-                    services.AddScoped<IBaseHandler<string>, WeatherChangeAlertHandler>();
+                    services.AddSingleton<ITelegramReceiverService, TelegramReceiverService>();
+                    services.AddScoped<ICommand<WeatherChangeAlertRequest>, WeatherChangeAlertHandler>();
 
-                    using var serviceProvider = services.BuildServiceProvider();
-                    var telegramSender = serviceProvider.GetRequiredService<ITelegramReceiverService>();
-                    telegramSender.Initialize();
-                    var messageQueue = serviceProvider.GetRequiredService<IMessageQueue>();
-                    messageQueue.Subscribe(MessageQueueRouteEnum.WeatherChangeAlert, serviceProvider.GetRequiredService<IBaseHandler<string>>());
+                    using ServiceProviderBuilder spBuilder = new(services);
+                    spBuilder
+                        .AddTelegramReceiverService()
+                        .AddMessageQueue()
+                        .Build();
                 })
                 .Build();
 

@@ -1,25 +1,23 @@
 ﻿using Telegram.Bot;
-using WeatherCommon.Services.Handlers;
+using WeatherCommon.Models.Request;
+using WeatherCommon.Services.Command;
 
 namespace WeatherTelegramService.Handlers
 {
-    public class WeatherChangeAlertHandler : IBaseHandler<string>
+    public class WeatherChangeAlertHandler : BaseCommand<WeatherChangeAlertRequest>
     {
         private readonly ITelegramBotClient _botClient;
-        private readonly ILogger<WeatherChangeAlertHandler> _logger;
 
-        public WeatherChangeAlertHandler(ITelegramBotClient botClient, ILogger<WeatherChangeAlertHandler> logger)
+        public WeatherChangeAlertHandler(ITelegramBotClient botClient, ILogger logger) : base(logger)
         {
             _botClient = botClient;
-            _logger = logger;
         }
-        public async Task Handle(string request)
-        {
-            Console.WriteLine(request);
 
+        public override async Task ExecuteCommand(WeatherChangeAlertRequest request)
+        {
             await _botClient.SendTextMessageAsync(
-                chatId: 334648141,
-                text: request);
+                chatId: request.ChatID,
+                text: request.Text);
         }
     }
 }
