@@ -3,10 +3,7 @@ using Telegram.Bot;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
-using WeatherDatabase.Repository;
-using WeatherDatabase.Models;
-using Microsoft.EntityFrameworkCore;
-using WeatherDatabase;
+using WeatherTelegramService.Services.FollowCityFacade;
 
 namespace WeatherTelegramService.Services.Telegram
 {
@@ -14,22 +11,16 @@ namespace WeatherTelegramService.Services.Telegram
     {
         private readonly ILogger<TelegramReceiverService> _logger;
         private readonly ITelegramBotClient _botClient;
-        private readonly IRepository<WeatherDatabase.Models.User> userRepository;
-        private readonly IRepository<City> cityRepository;
-        private readonly WeatherDatabaseContext context;
+        private readonly IServiceProvider _serviceProvider;
 
         public TelegramReceiverService(
             ITelegramBotClient botClient,
-            IRepository<WeatherDatabase.Models.User> userRepository,
-            IRepository<City> cityRepository,
-            WeatherDatabaseContext context,
+            IServiceProvider serviceProvider,
             ILogger<TelegramReceiverService> logger)
         {
             _logger = logger;
             _botClient = botClient;
-            this.userRepository = userRepository;
-            this.cityRepository = cityRepository;
-            this.context = context;
+            _serviceProvider = serviceProvider;
         }
         public void Initialize()
         {
@@ -50,9 +41,6 @@ namespace WeatherTelegramService.Services.Telegram
 
         private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
         {
-            /*var userRepository = _serviceScope.ServiceProvider.GetRequiredService<IRepository<WeatherDatabase.Models.User>>();
-            var cityRepository = _serviceScope.ServiceProvider.GetRequiredService<IRepository<City>>();
-            var context = _serviceScope.ServiceProvider.GetRequiredService<WeatherDatabaseContext>();*/
             try
             {
                 // Only process Message updates: https://core.telegram.org/bots/api#message
@@ -74,16 +62,8 @@ namespace WeatherTelegramService.Services.Telegram
                         cancellationToken: cancellationToken);
                     return;
                 }
-
-                var user = await userRepository.Get().FirstOrDefaultAsync(x => x.ChatId == chatId);
-                user ??= new WeatherDatabase.Models.User { Id = Guid.NewGuid(), ChatId = chatId, Name = $"{message.Chat.FirstName} {message.Chat.LastName}" };
-
-                var city = await cityRepository.Get().FirstOrDefaultAsync(x => x.Name == messageText);
-                city ??= new City { Id = Guid.NewGuid(), Name = messageText };
-                await cityRepository.Add(city);
-                await userRepository.Add(user);
-
-                await context.SaveChangesAsync();
+                using var followCityService = new FollowCityFacadeService(_serviceProvider);
+                await followCityService.Operation(chatId, messageText, $"{message.Chat.FirstName} {message.Chat.LastName}");
             }
             catch
             {
