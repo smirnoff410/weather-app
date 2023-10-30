@@ -1,9 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace WeatherBackendAfter.City.Controllers
+namespace WeatherBackend.City.Controllers
 {
     using WeatherBackend.City.Models;
     using WeatherBackend.City.Repository;
+    using WeatherBackend.Models;
 
     [ApiController]
     [Route("[controller]")]

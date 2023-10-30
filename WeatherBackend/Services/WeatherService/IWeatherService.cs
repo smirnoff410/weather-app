@@ -1,8 +1,8 @@
-﻿using WeatherBackendAfter.History.Models;
+﻿using WeatherBackend.History.Models;
 
 namespace WeatherBackend.Services.WeatherService
 {
-    using WeatherBackendAfter.WeatherForecast.Models;
+    using WeatherBackend.WeatherForecast.Models;
     public interface IWeatherService
     {
         IEnumerable<WeatherForecast> GenerateForCurrentDay(int toHours);

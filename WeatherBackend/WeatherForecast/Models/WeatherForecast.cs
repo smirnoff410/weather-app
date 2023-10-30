@@ -1,4 +1,4 @@
-namespace WeatherBackendAfter.WeatherForecast.Models
+namespace WeatherBackend.WeatherForecast.Models
 {
     public class WeatherForecast
     {

@@ -1,10 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 
-namespace WeatherBackendAfter.History.Controllers
+namespace WeatherBackend.History.Controllers
 {
     using System;
     using WeatherBackend.Services.WeatherService;
-    using WeatherBackendAfter.History.Models;
+    using WeatherBackend.History.Models;
 
     [ApiController]
     [Route("[controller]")]
