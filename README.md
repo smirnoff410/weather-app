@@ -18,21 +18,17 @@ Scaffold-DbContext "Server=DESKTOP-LFM3LHR\SQLEXPRESS;Database=WeatherDatabase;T
 Code First - подход для управления базой данных на основе контекста EntityFramework
 
 Для использования необходимо:
-- С помощью консоли диспетчера пакетов установить инструмент Install-Package Microsoft.EntityFrameworkCore.Tools
-- В контексте EntityFramework оставить только DbSet и конструктор
+- С помощью консоли диспетчера пакетов установить инструмент Install-Package Microsoft.EntityFrameworkCore.Tools и используемый провайдер, например Install-Package Microsoft.EntityFrameworkCore.SqlServer
+- В контексте EntityFramework оставить только DbSet и метод OnConfiguring
 ```csharp
 public partial class WeatherDatabaseContext : DbContext
 {
     public virtual DbSet<City> Cities { get; set; }
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<Forecast> Forecasts { get; set; }
-    public WeatherDatabaseContext(DbContextOptions options) : base(options) { }
+    protected override void OnConfiguring(DbContextOptionsBuilder options) =>
+        options.UseSqlServer("Server=DESKTOP-BOLD0JC\\SQLEXPRESS;Database=WeatherDatabaseTemp;Trusted_Connection=True;Encrypt=false");
 }
-```
-- В классе Program добавить контекст в DI контейнер:
-```csharp
-builder.Services.AddDbContext<WeatherDatabaseContext>(options =>
-    options.UseSqlServer(builder.Configuration["DatabaseSettings:ConnectionString"]));
 ```
 - Чтобы сгенерировать миграцию, в консоли диспетчера пакетов выполнить: Add-Migration InitialCreate
 - Для обновления базы данных все в той же консоли: Update-Database
