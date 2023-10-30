@@ -15,3 +15,5 @@ WeatherGrabber/obj
 WeatherTelegramService/bin
 WeatherTelegramService/obj
 WeatherTelegramService/secrets.json
+WeatherDatabase/bin
+WeatherDatabase/obj

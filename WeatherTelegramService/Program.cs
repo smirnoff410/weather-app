@@ -7,6 +7,9 @@ using System.Text.Json;
 using WeatherCommon.Services.Command;
 using WeatherCommon.Models.Request;
 using WeatherTelegramService.Services.ServiceBuilder;
+using WeatherDatabase.Models;
+using WeatherDatabase.Repository;
+using WeatherDatabase;
 
 namespace WeatherTelegramService
 {
@@ -19,10 +22,14 @@ namespace WeatherTelegramService
                 {
                     services.AddSingleton<IMessageQueue, RabbitMessageQueue>();
                     services.AddSingleton<ITelegramBotClient>(x => new TelegramBotClient(GetTelegramBotTokenFromSecrets()));
-                    services.AddSingleton<ITelegramReceiverService, TelegramReceiverService>();
+                    services.AddScoped<ITelegramReceiverService, TelegramReceiverService>();
                     services.AddScoped<ICommand<WeatherChangeAlertRequest>, WeatherChangeAlertHandler>();
 
-                    using ServiceProviderBuilder spBuilder = new(services);
+                    services.AddDbContext<WeatherDatabaseContext>();
+                    services.AddScoped<IRepository<City>>(x => new Repository<City>(x.GetRequiredService<WeatherDatabaseContext>()));
+                    services.AddScoped<IRepository<User>>(x => new Repository<User>(x.GetRequiredService<WeatherDatabaseContext>()));
+
+                    ServiceProviderBuilder spBuilder = new(services);
                     spBuilder
                         .AddTelegramReceiverService()
                         .AddMessageQueue()

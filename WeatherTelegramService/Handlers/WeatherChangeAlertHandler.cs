@@ -8,7 +8,7 @@ namespace WeatherTelegramService.Handlers
     {
         private readonly ITelegramBotClient _botClient;
 
-        public WeatherChangeAlertHandler(ITelegramBotClient botClient, ILogger logger) : base(logger)
+        public WeatherChangeAlertHandler(ITelegramBotClient botClient, ILogger<WeatherChangeAlertHandler> logger) : base(logger)
         {
             _botClient = botClient;
         }

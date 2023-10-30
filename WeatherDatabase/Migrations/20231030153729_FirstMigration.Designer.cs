@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using WeatherBackend.Models;
+using WeatherDatabase;
 
 #nullable disable
 
-namespace WeatherBackend.Migrations
+namespace WeatherDatabase.Migrations
 {
     [DbContext(typeof(WeatherDatabaseContext))]
-    [Migration("20231030083556_SecondMigration")]
-    partial class SecondMigration
+    [Migration("20231030153729_FirstMigration")]
+    partial class FirstMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -40,7 +40,7 @@ namespace WeatherBackend.Migrations
                     b.ToTable("CityUser");
                 });
 
-            modelBuilder.Entity("WeatherBackend.Models.City", b =>
+            modelBuilder.Entity("WeatherDatabase.Models.City", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -54,7 +54,7 @@ namespace WeatherBackend.Migrations
                     b.ToTable("Cities");
                 });
 
-            modelBuilder.Entity("WeatherBackend.Models.Forecast", b =>
+            modelBuilder.Entity("WeatherDatabase.Models.Forecast", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -79,7 +79,7 @@ namespace WeatherBackend.Migrations
                     b.ToTable("Forecasts");
                 });
 
-            modelBuilder.Entity("WeatherBackend.Models.User", b =>
+            modelBuilder.Entity("WeatherDatabase.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
@@ -99,29 +99,29 @@ namespace WeatherBackend.Migrations
 
             modelBuilder.Entity("CityUser", b =>
                 {
-                    b.HasOne("WeatherBackend.Models.City", null)
+                    b.HasOne("WeatherDatabase.Models.City", null)
                         .WithMany()
                         .HasForeignKey("CitiesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("WeatherBackend.Models.User", null)
+                    b.HasOne("WeatherDatabase.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UsersId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("WeatherBackend.Models.Forecast", b =>
+            modelBuilder.Entity("WeatherDatabase.Models.Forecast", b =>
                 {
-                    b.HasOne("WeatherBackend.Models.City", "City")
+                    b.HasOne("WeatherDatabase.Models.City", "City")
                         .WithMany("WeatherForecasts")
                         .HasForeignKey("CityId");
 
                     b.Navigation("City");
                 });
 
-            modelBuilder.Entity("WeatherBackend.Models.City", b =>
+            modelBuilder.Entity("WeatherDatabase.Models.City", b =>
                 {
                     b.Navigation("WeatherForecasts");
                 });

@@ -1,6 +1,10 @@
+using Microsoft.EntityFrameworkCore;
 using WeatherCommon.Services.MessageQueue;
 using WeatherGrabber.Clients;
 using WeatherGrabber.Settings;
+using WeatherDatabase;
+using WeatherDatabase.Models;
+using WeatherDatabase.Repository;
 
 namespace WeatherGrabber
 {
@@ -17,6 +21,10 @@ namespace WeatherGrabber
                     services.AddSingleton<IWeatherClient, WeatherApiClient>();
                     services.Configure<ServiceSettings>(configuration.Configuration.GetSection("ServiceSettings"));
                     services.AddSingleton<IMessageQueue, RabbitMessageQueue>();
+
+                    services.AddDbContext<WeatherDatabaseContext>();
+                    services.AddScoped<IRepository<City>>(x => new Repository<City>(x.GetRequiredService<WeatherDatabaseContext>()));
+                    services.AddScoped<IRepository<User>>(x => new Repository<User>(x.GetRequiredService<WeatherDatabaseContext>()));
                 })
                 .Build();
 

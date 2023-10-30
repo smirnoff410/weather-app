@@ -3,16 +3,19 @@ using Microsoft.AspNetCore.Mvc;
 namespace WeatherBackend.WeatherForecast.Controllers
 {
     using Microsoft.Data.SqlClient;
-    using WeatherBackend.City.Repository;
+    using WeatherDatabase.Repository;
     using WeatherBackend.Services.WeatherService;
     using WeatherBackend.WeatherForecast.Models;
+    using WeatherDatabase.Models;
+    using Microsoft.EntityFrameworkCore;
+
     [ApiController]
     [Route("[controller]")]
     public class WeatherForecastController : ControllerBase
     {
         private readonly IWeatherService _weatherService;
-        private readonly ICityRepository _cityRepository;
-        public WeatherForecastController(ICityRepository cityRepository)
+        private readonly IRepository<City> _cityRepository;
+        public WeatherForecastController(IRepository<City> cityRepository)
         {
             _weatherService = new WeatherService();
             _cityRepository = cityRepository;
@@ -22,7 +25,7 @@ namespace WeatherBackend.WeatherForecast.Controllers
         public async Task<IEnumerable<WeatherForecastFuture>> ListFuture()
         {
             var response = new List<WeatherForecastFuture>();
-            foreach(var city in await _cityRepository.List())
+            foreach(var city in await _cityRepository.Get().ToListAsync())
             {
                 var forecasts = _weatherService.GenerateHistory(DateTime.UtcNow, DateTime.UtcNow.AddDays(3)).ToList();
                 foreach(var forecast in forecasts)

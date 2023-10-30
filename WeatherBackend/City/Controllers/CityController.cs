@@ -3,41 +3,46 @@
 namespace WeatherBackend.City.Controllers
 {
     using WeatherBackend.City.Models;
-    using WeatherBackend.City.Repository;
-    using WeatherBackend.Models;
+    using WeatherCommon.Extensions;
+    using WeatherCommon.Models.Request;
+    using WeatherCommon.Services.Mediator;
 
     [ApiController]
     [Route("[controller]")]
     public class CityController : ControllerBase
     {
-        private readonly ICityRepository _cityRepository;
+        private readonly IMediator _mediator;
 
-        public CityController(ICityRepository cityRepository)
+        public CityController(IMediator mediator)
         {
-            _cityRepository = cityRepository;
+            _mediator = mediator;
         }
         [HttpGet("")]
-        public async Task<IEnumerable<City>> GetCities()
+        public async Task<IActionResult> GetCities()
         {
-            return await _cityRepository.List();
+            var result = await _mediator.Dispatch<GetEntitiesRequest, ICollection<CityResponseItem>>(new GetEntitiesRequest());
+            return result.ToActionResult();
         }
 
         [HttpPost("[action]")]
-        public async Task<Guid> Create(CreateCityDTO dto)
+        public async Task<IActionResult> Create(CreateCityDTO dto)
         {
-            return await _cityRepository.Create(dto);
+            var result = await _mediator.Dispatch<CreateEntityRequest<CreateCityDTO>, CityResponseItem>(new CreateEntityRequest<CreateCityDTO>(dto));
+            return result.ToActionResult();
         }
 
         [HttpPut("[action]/{id:guid}")]
-        public async Task Update(Guid id, UpdateCityDTO dto)
+        public async Task<IActionResult> Update(Guid id, UpdateCityDTO dto)
         {
-            await _cityRepository.Update(id, dto);
+            var result = await _mediator.Dispatch<UpdateEntityRequest<UpdateCityDTO>, CityResponseItem>(new UpdateEntityRequest<UpdateCityDTO>(id, dto));
+            return result.ToActionResult();
         }
 
         [HttpDelete("[action]/{id:guid}")]
-        public async Task Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id)
         {
-            await _cityRepository.Delete(id);
+            var result = await _mediator.Dispatch<DeleteEntityRequest, CityResponseItem>(new DeleteEntityRequest(id));
+            return result.ToActionResult();
         }
     }
 }

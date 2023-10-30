@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace WeatherBackend.Models;
+namespace WeatherDatabase.Models;
 
 public partial class City
 {

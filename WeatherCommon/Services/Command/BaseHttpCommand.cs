@@ -5,9 +5,9 @@ namespace WeatherCommon.Services.Command
 {
     public abstract class BaseHttpCommand<TRequest, TResponse> : ICommand<TRequest, TResponse>
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<ICommand<TRequest, TResponse>> _logger;
 
-        public BaseHttpCommand(ILogger logger)
+        public BaseHttpCommand(ILogger<ICommand<TRequest, TResponse>> logger)
         {
             _logger = logger;
         }

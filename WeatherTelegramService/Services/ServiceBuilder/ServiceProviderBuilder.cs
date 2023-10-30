@@ -6,7 +6,7 @@ using WeatherTelegramService.Services.Telegram;
 
 namespace WeatherTelegramService.Services.ServiceBuilder
 {
-    public class ServiceProviderBuilder : IDisposable
+    public class ServiceProviderBuilder
     {
         private readonly ServiceProvider _serviceProvider;
 
@@ -30,11 +30,6 @@ namespace WeatherTelegramService.Services.ServiceBuilder
         public ServiceProvider Build()
         {
             return _serviceProvider;
-        }
-
-        public void Dispose()
-        {
-            _serviceProvider.Dispose();
         }
     }
 }

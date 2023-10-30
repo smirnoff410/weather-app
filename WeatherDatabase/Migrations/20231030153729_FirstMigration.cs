@@ -3,10 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace WeatherBackend.Migrations
+namespace WeatherDatabase.Migrations
 {
     /// <inheritdoc />
-    public partial class InitialCreate : Migration
+    public partial class FirstMigration : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -37,7 +37,7 @@ namespace WeatherBackend.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "WeatherForecasts",
+                name: "Forecasts",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -48,9 +48,9 @@ namespace WeatherBackend.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WeatherForecasts", x => x.Id);
+                    table.PrimaryKey("PK_Forecasts", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_WeatherForecasts_Cities_CityId",
+                        name: "FK_Forecasts_Cities_CityId",
                         column: x => x.CityId,
                         principalTable: "Cities",
                         principalColumn: "Id");
@@ -86,8 +86,8 @@ namespace WeatherBackend.Migrations
                 column: "UsersId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WeatherForecasts_CityId",
-                table: "WeatherForecasts",
+                name: "IX_Forecasts_CityId",
+                table: "Forecasts",
                 column: "CityId");
         }
 
@@ -98,7 +98,7 @@ namespace WeatherBackend.Migrations
                 name: "CityUser");
 
             migrationBuilder.DropTable(
-                name: "WeatherForecasts");
+                name: "Forecasts");
 
             migrationBuilder.DropTable(
                 name: "Users");
