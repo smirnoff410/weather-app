@@ -4,11 +4,11 @@ using WeatherCommon.Services.Command;
 
 namespace WeatherTelegramService.Handlers
 {
-    public class WeatherChangeAlertHandler : BaseCommand<WeatherChangeAlertRequest>
+    public class WeatherChangeAlertCommand : BaseCommand<WeatherChangeAlertRequest>
     {
         private readonly ITelegramBotClient _botClient;
 
-        public WeatherChangeAlertHandler(ITelegramBotClient botClient, ILogger<WeatherChangeAlertHandler> logger) : base(logger)
+        public WeatherChangeAlertCommand(ITelegramBotClient botClient, ILogger<WeatherChangeAlertCommand> logger) : base(logger)
         {
             _botClient = botClient;
         }

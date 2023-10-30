@@ -23,7 +23,7 @@ namespace WeatherTelegramService
                     services.AddSingleton<IMessageQueue, RabbitMessageQueue>();
                     services.AddSingleton<ITelegramBotClient>(x => new TelegramBotClient(GetTelegramBotTokenFromSecrets()));
                     services.AddScoped<ITelegramReceiverService, TelegramReceiverService>();
-                    services.AddScoped<ICommand<WeatherChangeAlertRequest>, WeatherChangeAlertHandler>();
+                    services.AddScoped<ICommand<WeatherChangeAlertRequest>, WeatherChangeAlertCommand>();
 
                     services.AddDbContext<WeatherDatabaseContext>();
                     services.AddScoped<IRepository<City>>(x => new Repository<City>(x.GetRequiredService<WeatherDatabaseContext>()));

@@ -1,46 +1,58 @@
 # Лабораторная работа №3
-## Database First, Code First
+## Patterns GoF
 
-### Database First
-Database First - подход для управления контекстом Entity Framework на основе существующей базы данных
-
-Для использования необходимо: 
-- С помощью консоли диспетчера пакетов установить инструмент Install-Package Microsoft.EntityFrameworkCore.Tools
-- Добавить Nuget пакет Microsoft.EntityFrameworkCore.Design
-- Добавить Nuget пакет поставщика баз данных (SqlServer, PostgreSQL и т.д.)
-
-С помощью консоли диспетчера пакетов в Visual Studio выполнить реконструкцию контекста, например следующей командой:
-Scaffold-DbContext "Server=DESKTOP-LFM3LHR\SQLEXPRESS;Database=WeatherDatabase;Trusted_Connection=True;Encrypt=false" Microsoft.EntityFrameworkCore.SqlServer -OutputDir Models -f
-
-Подробнее о Scaffold: https://learn.microsoft.com/ru-ru/ef/core/managing-schemas/scaffolding/?tabs=vs
-
-### Code First
-Code First - подход для управления базой данных на основе контекста EntityFramework
-
-Для использования необходимо:
-- С помощью консоли диспетчера пакетов установить инструмент Install-Package Microsoft.EntityFrameworkCore.Tools
-- В контексте EntityFramework оставить только DbSet и конструктор
-```csharp
-public partial class WeatherDatabaseContext : DbContext
-{
-    public virtual DbSet<City> Cities { get; set; }
-    public virtual DbSet<User> Users { get; set; }
-    public virtual DbSet<Forecast> Forecasts { get; set; }
-    public WeatherDatabaseContext(DbContextOptions options) : base(options) { }
-}
-```
-- В классе Program добавить контекст в DI контейнер:
-```csharp
-builder.Services.AddDbContext<WeatherDatabaseContext>(options =>
-    options.UseSqlServer(builder.Configuration["DatabaseSettings:ConnectionString"]));
-```
-- Чтобы сгенерировать миграцию, в консоли диспетчера пакетов выполнить: Add-Migration InitialCreate
-- Для обновления базы данных все в той же консоли: Update-Database
-
-Между миграциями можно переключаться, тем самым понижать или повышать версию БД.
-Update-Database <migration_name>
-
-Подробнее о Code First: https://learn.microsoft.com/ru-ru/ef/core/get-started/overview/first-app?tabs=visual-studio
+Паттерны GoF(Gang of four) подразделяются на 3 категории: порождающие, структурные и поведенческие.
 
 ### Задание
-Для своего проекта выполнить 2 подхода. Если уже существует база данных, то легче сначала выполнить подход Database First, а потом на основе автоматически созданных классов создать новую базу данных с помощью подхода Code First
+Реализовать любой паттерн из каждой категории(всего 3 паттерна и они не должны часто повторяться у студентов).
+
+### Порождающие
+Отвечают за удобное и безопасное создание новых объектов или даже целых семейств объектов.
+В проекте реализован паттерн Строитель. 
+[WeatherTelegramService.Services.ServiceBuilder](https://github.com/smirnoff410/weather-app/blob/oop/Lab3/WeatherTelegramService/Services/ServiceBuilder/ServiceProviderBuilder.cs)
+Использование в проекте
+```csharp
+ServiceProviderBuilder spBuilder = new(services);
+spBuilder
+    .AddTelegramReceiverService()
+    .AddMessageQueue()
+    .Build();
+```
+
+### Структурные
+Отвечают за построение удобных в поддержке иерархий классов.
+В проекте реализован паттер Фасад.
+[WeatherTelegramService.Services.FollowCityFacade](https://github.com/smirnoff410/weather-app/blob/oop/Lab3/WeatherTelegramService/Services/FollowCityFacade/FollowCityFacadeService.cs)
+Использование в проекте
+```csharp
+using var followCityService = new FollowCityFacadeService(_serviceProvider);
+await followCityService.Operation(chatId, messageText, $"{message.Chat.FirstName} {message.Chat.LastName}");
+```
+
+### Поведенческие
+Решают задачи эффективного и безопасного взаимодействия между объектами программы.
+В проекте реализован паттерн Команда.
+[WeatherCommon.Services.Command](https://github.com/smirnoff410/weather-app/blob/oop/Lab3/WeatherCommon/Services/Command/ICommand.cs)
+Использование в проекте
+```csharp
+public class WeatherChangeAlertCommand : BaseCommand<WeatherChangeAlertRequest>
+{
+    private readonly ITelegramBotClient _botClient;
+
+    public WeatherChangeAlertCommand(ITelegramBotClient botClient, ILogger<WeatherChangeAlertCommand> logger) : base(logger)
+    {
+        _botClient = botClient;
+    }
+
+    public override async Task ExecuteCommand(WeatherChangeAlertRequest request)
+    {
+        await _botClient.SendTextMessageAsync(
+            chatId: request.ChatID,
+            text: request.Text);
+    }
+}
+```
+
+### Полезные ссылки
+https://refactoring.guru/ru/design-patterns/catalog - доступно с VPN
+https://metanit.com/sharp/patterns/
