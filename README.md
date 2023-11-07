@@ -1,61 +1,23 @@
 # Лабораторная работа №5
 ## Git pull request
 
-Паттерны GoF(Gang of four) подразделяются на 3 категории: порождающие, структурные и поведенческие.
+Гит предоставляет удобные средства для работы в команде. Одними из таких инструментов являются: контроль доступа к реопзиторию, веткам.
+
+Обычно все изменения которые попадают в основную ветку master(или main) отслеживаются старшими разработчиками, чтобы соблюсти единый стиль и предотвратить потенциальные логические ошибки.
+
+Для этого используется механизм pull requests, который воспроизводит следующий сценарий:
+- В репозитории существует основная защищенная ветка(main или master)
+- Младший разработчик комитит все изменения в свою ветку;
+- Младший разработчик на сайте github создает pull request и назначает ответсвенного старшего разработчика;
+- Старший разработчик смотрит историю изменений и оставляет свои комментарии, если:
+	- Предоставленные изменения устраивают старшего разработчика, то pull request закрываются и изменения попадают в основную ветку;
+	- Предоставленные изменения НЕ устраивают старшего разработчика, то pull request переназначается обратно на младшего разработчика и ожидаются нове комиты.
+	
 
 ### Задание
-Реализовать любой паттерн из каждой категории(всего 3 паттерна и они не должны часто повторяться у студентов).
-
-### Порождающие
-Отвечают за удобное и безопасное создание новых объектов или даже целых семейств объектов.
-В проекте реализован паттерн Строитель. [WeatherTelegramService.Services.ServiceBuilder](https://github.com/smirnoff410/weather-app/blob/oop/Lab3/WeatherTelegramService/Services/ServiceBuilder/ServiceProviderBuilder.cs)
-
-Использование в проекте
-
-```csharp
-ServiceProviderBuilder spBuilder = new(services);
-spBuilder
-    .AddTelegramReceiverService()
-    .AddMessageQueue()
-    .Build();
-```
-
-### Структурные
-Отвечают за построение удобных в поддержке иерархий классов.
-В проекте реализован паттер Фасад. [WeatherTelegramService.Services.FollowCityFacade](https://github.com/smirnoff410/weather-app/blob/oop/Lab3/WeatherTelegramService/Services/FollowCityFacade/FollowCityFacadeService.cs)
-
-Использование в проекте
-
-```csharp
-using var followCityService = new FollowCityFacadeService(_serviceProvider);
-await followCityService.Operation(chatId, messageText, $"{message.Chat.FirstName} {message.Chat.LastName}");
-```
-
-### Поведенческие
-Решают задачи эффективного и безопасного взаимодействия между объектами программы.
-В проекте реализован паттерн Команда. [WeatherCommon.Services.Command](https://github.com/smirnoff410/weather-app/blob/oop/Lab3/WeatherCommon/Services/Command/ICommand.cs)
-
-Использование в проекте
-```csharp
-public class WeatherChangeAlertCommand : BaseCommand<WeatherChangeAlertRequest>
-{
-    private readonly ITelegramBotClient _botClient;
-
-    public WeatherChangeAlertCommand(ITelegramBotClient botClient, ILogger<WeatherChangeAlertCommand> logger) : base(logger)
-    {
-        _botClient = botClient;
-    }
-
-    public override async Task ExecuteCommand(WeatherChangeAlertRequest request)
-    {
-        await _botClient.SendTextMessageAsync(
-            chatId: request.ChatID,
-            text: request.Text);
-    }
-}
-```
-
-### Полезные ссылки
-https://refactoring.guru/ru/design-patterns/catalog - доступно с VPN
-
-https://metanit.com/sharp/patterns/
+1. Рассмотреть модели ветвления: git flow и trunk based. Выбрать какую модель будет использовать репозиторий. https://habr.com/ru/companies/avito/articles/680522/
+2. Создать 2й аккаунт на github(или использовать аккаунт одногруппника)
+3. Защитить основную ветку main(или master) от прямого push
+4. Добавить в свой репозиторий доступ для 2го аккаунта
+5. Сделать коммит в ветку и создать pull request, который должен заапрувить создатель репозитория
+6. На аккаунте создателя репозитория просмотреть изменения и либо смержить в основную ветку, либо отправить на доработку
