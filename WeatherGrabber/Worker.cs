@@ -7,7 +7,11 @@ using WeatherCommon.Services.MessageQueue;
 using WeatherDatabase.Models;
 using WeatherDatabase.Repository;
 using WeatherDatabase.Specification;
+using WeatherDatabase.Specification.Forecast;
 using WeatherGrabber.Clients;
+using WeatherGrabber.Models;
+using WeatherGrabber.Services;
+using WeatherGrabber.Services.Mappings;
 using WeatherGrabber.Settings;
 
 namespace WeatherGrabber
@@ -15,26 +19,29 @@ namespace WeatherGrabber
     public class Worker : BackgroundService
     {
         private readonly IWeatherClient _weatherClient;
+        private readonly IWeatherGrabberMappingFactory _mappingFactory;
         private readonly IRepository<City> _cityRepository;
+        private readonly IRepository<Forecast> _forecastRepository;
         private readonly IMessageQueue _messageQueue;
         private readonly ServiceSettings _serviceSettings;
         private readonly ILogger<Worker> _logger;
 
-        public Worker(IWeatherClient weatherClient, IRepository<City> cityRepository, IMessageQueue messageQueue, IOptions<ServiceSettings> serviceSettings, ILogger<Worker> logger)
+        public Worker(
+            IWeatherClient weatherClient,
+            IWeatherGrabberMappingFactory mappingFactory,
+            IRepository<City> cityRepository, 
+            IRepository<Forecast> forecastRepository, 
+            IMessageQueue messageQueue, 
+            IOptions<ServiceSettings> serviceSettings, 
+            ILogger<Worker> logger)
         {
             _weatherClient = weatherClient;
+            _mappingFactory = mappingFactory;
             _cityRepository = cityRepository;
+            _forecastRepository = forecastRepository;
             _messageQueue = messageQueue;
             _serviceSettings = serviceSettings.Value;
             _logger = logger;
-        }
-
-        public class GetUniqueCitiesSpecification : Specification<City>
-        {
-            public GetUniqueCitiesSpecification() : base(x => true)
-            {
-                AddInclude(x => x.Users);
-            }
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -43,12 +50,28 @@ namespace WeatherGrabber
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
 
-                var cities = _cityRepository.Get(new GetUniqueCitiesSpecification()).Select(x => x.Name).Distinct().ToListAsync();
+
+                var cities = await _cityRepository.Get().Select(x => new { x.Id, x.Name } ).ToListAsync(cancellationToken: stoppingToken);
                 /*
                  Get unique user cities from database
                  */
 
-                //var result = await _weatherClient.GetForecast("London");
+                var forecastToGrabberModelMapper = _mappingFactory.GetMapper<Forecast, ForecastGrabberModel>();
+                foreach (var city in cities)
+                {
+                    var forecasts = await _forecastRepository.Get(new GetForecastByCityIDSpecification(city.Id)).ToListAsync(cancellationToken: stoppingToken);
+
+                    var result = await _weatherClient.GetForecast(city.Name);
+
+                    var mapper = new ForecastComparerService();
+                    var dbForecasts = forecasts.Select(forecastToGrabberModelMapper.Map);
+
+                    //var apiForecasts = result.forecast.forecastday.Select(c => c.)
+                    //var mapForecast = mapper.Map(result);
+
+                    //forecasts.Equals(mapForecast);
+                }
+                
 
                 var message = "Hello from RabbitMQ";
                 _messageQueue.Publish(MessageQueueRouteEnum.WeatherChangeAlert, new WeatherChangeAlertRequest(1, message)); 

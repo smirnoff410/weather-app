@@ -5,6 +5,7 @@ using WeatherGrabber.Settings;
 using WeatherDatabase;
 using WeatherDatabase.Models;
 using WeatherDatabase.Repository;
+using WeatherGrabber.Services.Mappings;
 
 namespace WeatherGrabber
 {
@@ -15,8 +16,7 @@ namespace WeatherGrabber
             IHost host = Host.CreateDefaultBuilder(args)
                 .ConfigureServices((configuration, services) =>
                 {
-                    services.AddHostedService<Worker>();
-
+                    services.AddSingleton<IWeatherGrabberMappingFactory, WeatherGrabberMappingFactory>();
                     services.AddHttpClient("weatherapi", client => client.BaseAddress = new Uri("https://api.weatherapi.com/v1/"));
                     services.AddSingleton<IWeatherClient, WeatherApiClient>();
                     services.Configure<ServiceSettings>(configuration.Configuration.GetSection("ServiceSettings"));
@@ -25,6 +25,9 @@ namespace WeatherGrabber
                     services.AddDbContext<WeatherDatabaseContext>();
                     services.AddScoped<IRepository<City>>(x => new Repository<City>(x.GetRequiredService<WeatherDatabaseContext>()));
                     services.AddScoped<IRepository<User>>(x => new Repository<User>(x.GetRequiredService<WeatherDatabaseContext>()));
+
+                    var provider = services.BuildServiceProvider();
+                    provider.GetRequiredService<IWeatherGrabberMappingFactory>().Initialize();
                 })
                 .Build();
 
