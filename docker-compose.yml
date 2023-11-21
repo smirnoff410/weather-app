@@ -1,0 +1,10 @@
+version: "3.9"
+services:
+  backend:
+    hostname: weather_backend
+    container_name: weather_backend
+    build:
+      context: .
+      dockerfile: WeatherBackend/Dockerfile
+    ports:
+      - "8000:80"
