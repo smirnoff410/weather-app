@@ -24,7 +24,8 @@ builder.Services.Configure<DatabaseSettings>(builder.Configuration.GetSection("D
 
 builder.Services.AddScoped<IMediator, CommandMediator>();
 
-builder.Services.AddDbContext<WeatherDatabaseContext>();
+builder.Services.AddDbContext<WeatherDatabaseContext>(options => 
+    options.UseSqlServer(builder.Configuration.GetSection("DatabaseSettings").GetSection("ConnectionString").Value));
 builder.Services.AddScoped<IRepository<City>>(x => new Repository<City>(x.GetRequiredService<WeatherDatabaseContext>()));
 
 builder.Services.AddScoped<ICommand<GetEntitiesRequest, ICollection<CityResponseItem>>, GetCitiesCommand>();
@@ -40,5 +41,11 @@ app.UseSwaggerUI();
 app.UseAuthorization();
 
 app.MapControllers();
+
+using(var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<WeatherDatabaseContext>();
+    context.Database.Migrate();
+}
 
 app.Run();
