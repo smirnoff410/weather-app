@@ -15,7 +15,7 @@ namespace WeatherCommon.Services.MessageQueue
         {
             var factory = new ConnectionFactory
             {
-                Uri = new Uri("amqp://weather_user:weather_user@rabbitmq:5672")
+                Uri = new Uri("amqp://guest:guest@localhost:5672")
             };
 
             var connection = factory.CreateConnection();

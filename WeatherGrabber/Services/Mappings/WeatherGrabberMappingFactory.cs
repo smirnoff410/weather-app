@@ -7,6 +7,7 @@ namespace WeatherGrabber.Services.Mappings
         public override void Initialize()
         {
             _mapperList.Add(new ForecastDatabaseToForecastGrabberModelMap());
+            _mapperList.Add(new ForecastHourToForecastGrabberModelMap());
         }
     }
 }

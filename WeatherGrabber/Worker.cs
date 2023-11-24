@@ -1,16 +1,13 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
-using System.Linq.Expressions;
 using WeatherCommon.Models.MessageQueue;
 using WeatherCommon.Models.Request;
 using WeatherCommon.Services.MessageQueue;
 using WeatherDatabase.Models;
 using WeatherDatabase.Repository;
-using WeatherDatabase.Specification;
 using WeatherDatabase.Specification.Forecast;
 using WeatherGrabber.Clients;
 using WeatherGrabber.Models;
-using WeatherGrabber.Services;
 using WeatherGrabber.Services.Mappings;
 using WeatherGrabber.Settings;
 
@@ -20,8 +17,7 @@ namespace WeatherGrabber
     {
         private readonly IWeatherClient _weatherClient;
         private readonly IWeatherGrabberMappingFactory _mappingFactory;
-        private readonly IRepository<City> _cityRepository;
-        private readonly IRepository<Forecast> _forecastRepository;
+        private readonly IServiceProvider _serviceProvider;
         private readonly IMessageQueue _messageQueue;
         private readonly ServiceSettings _serviceSettings;
         private readonly ILogger<Worker> _logger;
@@ -29,19 +25,19 @@ namespace WeatherGrabber
         public Worker(
             IWeatherClient weatherClient,
             IWeatherGrabberMappingFactory mappingFactory,
-            IRepository<City> cityRepository, 
-            IRepository<Forecast> forecastRepository, 
+            IServiceProvider serviceProvider,
             IMessageQueue messageQueue, 
             IOptions<ServiceSettings> serviceSettings, 
             ILogger<Worker> logger)
         {
             _weatherClient = weatherClient;
             _mappingFactory = mappingFactory;
-            _cityRepository = cityRepository;
-            _forecastRepository = forecastRepository;
+            _serviceProvider = serviceProvider;
             _messageQueue = messageQueue;
             _serviceSettings = serviceSettings.Value;
             _logger = logger;
+
+            _mappingFactory.Initialize();
         }
 
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -49,34 +45,38 @@ namespace WeatherGrabber
             while (!stoppingToken.IsCancellationRequested)
             {
                 _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
+                var scope = _serviceProvider.CreateScope();
+                var cityRepository = scope.ServiceProvider.GetRequiredService<IRepository<City>>();
+                var forecastRepository = scope.ServiceProvider.GetRequiredService<IRepository<Forecast>>();
 
-
-                var cities = await _cityRepository.Get().Select(x => new { x.Id, x.Name } ).ToListAsync(cancellationToken: stoppingToken);
+                var cities = await cityRepository.Get().Select(x => new { x.Id, x.Name } ).ToListAsync(cancellationToken: stoppingToken);
                 /*
                  Get unique user cities from database
                  */
 
                 var forecastToGrabberModelMapper = _mappingFactory.GetMapper<Forecast, ForecastGrabberModel>();
+                var forecastDtoToGrabberModelMapper = _mappingFactory.GetMapper<DTO.WeatherAPI.Hour, ForecastGrabberModel>();
                 foreach (var city in cities)
                 {
-                    var forecasts = await _forecastRepository.Get(new GetForecastByCityIDSpecification(city.Id)).ToListAsync(cancellationToken: stoppingToken);
+                    var forecasts = await forecastRepository.Get(new GetForecastByCityIDSpecification(city.Id)).ToListAsync(cancellationToken: stoppingToken);
 
                     var result = await _weatherClient.GetForecast(city.Name);
 
-                    var mapper = new ForecastComparerService();
                     var dbForecasts = forecasts.Select(forecastToGrabberModelMapper.Map);
 
-                    //var apiForecasts = result.forecast.forecastday.Select(c => c.)
-                    //var mapForecast = mapper.Map(result);
+                    var apiForecasts = result.forecast.forecastday.First().hour;
+                    var mapForecast = apiForecasts.Select(forecastDtoToGrabberModelMapper.Map);
 
-                    //forecasts.Equals(mapForecast);
+                    var equal = dbForecasts.SequenceEqual(mapForecast);
+
+                    if (!equal)
+                    {
+                        var message = "Weather changed, look at the window!";
+                        _messageQueue.Publish(MessageQueueRouteEnum.WeatherChangeAlert, new WeatherChangeAlertRequest(city.Id, message));
+                        _logger.LogInformation("Sending message to {0} queue", MessageQueueRouteEnum.WeatherChangeAlert);
+                    }
                 }
                 
-
-                var message = "Hello from RabbitMQ";
-                _messageQueue.Publish(MessageQueueRouteEnum.WeatherChangeAlert, new WeatherChangeAlertRequest(1, message)); 
-                Console.WriteLine("Sending message to my-queue-name");
-
                 /*
                  Get forecast from database and compare with api
                 if they not equal -> save new forecast to database and send message to telegram service

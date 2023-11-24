@@ -1,4 +1,4 @@
 ﻿namespace WeatherCommon.Models.Request
 {
-    public record WeatherChangeAlertRequest(long ChatID, string Text);
+    public record WeatherChangeAlertRequest(Guid CityID, string Text);
 }

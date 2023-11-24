@@ -26,6 +26,9 @@ namespace WeatherGrabber
                         options.UseSqlServer(configuration.Configuration.GetSection("DatabaseSettings").GetSection("ConnectionString").Value));
                     services.AddScoped<IRepository<City>>(x => new Repository<City>(x.GetRequiredService<WeatherDatabaseContext>()));
                     services.AddScoped<IRepository<User>>(x => new Repository<User>(x.GetRequiredService<WeatherDatabaseContext>()));
+                    services.AddScoped<IRepository<Forecast>>(x => new Repository<Forecast>(x.GetRequiredService<WeatherDatabaseContext>()));
+
+                    services.AddHostedService<Worker>();
 
                     var provider = services.BuildServiceProvider();
                     provider.GetRequiredService<IWeatherGrabberMappingFactory>().Initialize();
