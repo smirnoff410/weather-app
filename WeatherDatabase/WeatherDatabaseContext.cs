@@ -14,10 +14,6 @@ public partial class WeatherDatabaseContext : DbContext
 
     public WeatherDatabaseContext()
     {
-
     }
     public WeatherDatabaseContext(DbContextOptions options) : base(options) { }
-
-    protected override void OnConfiguring(DbContextOptionsBuilder options) =>
-        options.UseSqlServer("Server=DESKTOP-BOLD0JC\\SQLEXPRESS;Database=WeatherDatabaseTemp;Trusted_Connection=True;Encrypt=false");
 }

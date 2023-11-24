@@ -22,7 +22,8 @@ namespace WeatherGrabber
                     services.Configure<ServiceSettings>(configuration.Configuration.GetSection("ServiceSettings"));
                     services.AddSingleton<IMessageQueue, RabbitMessageQueue>();
 
-                    services.AddDbContext<WeatherDatabaseContext>();
+                    services.AddDbContext<WeatherDatabaseContext>(options =>
+                        options.UseSqlServer(configuration.Configuration.GetSection("DatabaseSettings").GetSection("ConnectionString").Value));
                     services.AddScoped<IRepository<City>>(x => new Repository<City>(x.GetRequiredService<WeatherDatabaseContext>()));
                     services.AddScoped<IRepository<User>>(x => new Repository<User>(x.GetRequiredService<WeatherDatabaseContext>()));
 

@@ -10,6 +10,8 @@ using WeatherTelegramService.Services.ServiceBuilder;
 using WeatherDatabase.Models;
 using WeatherDatabase.Repository;
 using WeatherDatabase;
+using Microsoft.Extensions.Options;
+using Microsoft.EntityFrameworkCore;
 
 namespace WeatherTelegramService
 {
@@ -25,7 +27,8 @@ namespace WeatherTelegramService
                     services.AddScoped<ITelegramReceiverService, TelegramReceiverService>();
                     services.AddScoped<ICommand<WeatherChangeAlertRequest>, WeatherChangeAlertCommand>();
 
-                    services.AddDbContext<WeatherDatabaseContext>();
+                    services.AddDbContext<WeatherDatabaseContext>(options =>
+                        options.UseSqlServer(configuration.Configuration.GetSection("DatabaseSettings").GetSection("ConnectionString").Value)); ;
                     services.AddScoped<IRepository<City>>(x => new Repository<City>(x.GetRequiredService<WeatherDatabaseContext>()));
                     services.AddScoped<IRepository<User>>(x => new Repository<User>(x.GetRequiredService<WeatherDatabaseContext>()));
 

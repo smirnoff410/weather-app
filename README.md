@@ -1,67 +1,67 @@
-# Лабораторная работа №3
-## Patterns GoF
-
-Паттерны GoF(Gang of four) подразделяются на 3 категории: порождающие, структурные и поведенческие.
+# Лабораторная работа №6
+## Docker
 
 ### Задание
-Реализовать любой паттерн из каждой категории(всего 3 паттерна и они не должны часто повторяться у студентов).
+1. Создать docker образы для каждого сервиса
+2. Создать контейнеры на основе docker образов
+3. Обернуть все Dockerfile в docker-compose
 
-### Порождающие
-Отвечают за удобное и безопасное создание новых объектов или даже целых семейств объектов.
-В проекте реализован паттерн Строитель. 
+### Шаги
+1. Создайте текстовый файл с названием Dockerfile для сервиса, например `weather-app/WeatherBackend/Dockerfile`
 
-[WeatherTelegramService.Services.ServiceBuilder](https://github.com/smirnoff410/weather-app/blob/oop/Lab3/WeatherTelegramService/Services/ServiceBuilder/ServiceProviderBuilder.cs)
+2. Наполните файл инструкциями докера, например
+```
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
+WORKDIR /app
 
-Использование в проекте
+COPY "WeatherBackend/WeatherBackend.csproj" "WeatherBackend/WeatherBackend.csproj"
+COPY "WeatherCommon/WeatherCommon.csproj" "WeatherCommon/WeatherCommon.csproj"
+COPY "WeatherDatabase/WeatherDatabase.csproj" "WeatherDatabase/WeatherDatabase.csproj"
 
-```csharp
-ServiceProviderBuilder spBuilder = new(services);
-spBuilder
-    .AddTelegramReceiverService()
-    .AddMessageQueue()
-    .Build();
+RUN dotnet restore "WeatherBackend/WeatherBackend.csproj"
+
+COPY "WeatherBackend" "WeatherBackend"
+COPY "WeatherCommon" "WeatherCommon"
+COPY "WeatherDatabase" "WeatherDatabase"
+
+RUN dotnet publish "WeatherBackend/WeatherBackend.csproj" -c Release -o /app/publish /p:UseAppHost=false
+
+FROM mcr.microsoft.com/dotnet/aspnet:7.0
+WORKDIR /app
+COPY --from=build-env /app/publish .
+ENTRYPOINT ["dotnet", "WeatherBackend.dll"]
+```
+ПРИМЕЧАНИЕ: При создании нового проекта в Visual Studio предлагается автоматически сгенерировать Dockerfile. Также шаблоны Dockerfile можно найти для своего языка в интернете.
+
+3. Создайте образ сервиса, для этого нужно открыть консоль на уровне weather-app: `docker build -t weather_backend_image -f WeatherBackend/Dockerfile .`
+
+4. Убедиться в создании образа можно с помощью команды `docker image ls`
+
+5. Запустите контейнер на основе образа с помощью команды `docker run -p 8000:80 --name weather_backend weather_backend_image`
+
+Чтобы запустить контейнер в отдельном потоке, неободимо при запуске контейнера передать параметр `-d` 
+
+6. Убедиться в создании контейнера можно с помощью команды `docker ps -a`
+
+ПРИМЕЧАНИЕ: Для очистки памяти можно удалять ненужные образы и контейнеры с помощью команд:
+
+- образы - docker image rm <image_id>
+- контейнеры - docker rm <container_id>
+
+7. Создайте в корне проекта файл docker-compose.yml, например со следующим содержимым
+```
+version: "3.9"
+services:
+  backend:
+    hostname: weather_backend
+    container_name: weather_backend
+    build:
+      context: .
+      dockerfile: WeatherBackend/Dockerfile
+    ports:
+      - "8000:80"
 ```
 
-### Структурные
-Отвечают за построение удобных в поддержке иерархий классов.
-В проекте реализован паттер Фасад.
+8. Создайте образы и контейнеры по инструкциям в файле docker compose с помощью команды: `docker-compose up -d`
 
-[WeatherTelegramService.Services.FollowCityFacade](https://github.com/smirnoff410/weather-app/blob/oop/Lab3/WeatherTelegramService/Services/FollowCityFacade/FollowCityFacadeService.cs)
-
-Использование в проекте
-
-```csharp
-using var followCityService = new FollowCityFacadeService(_serviceProvider);
-await followCityService.Operation(chatId, messageText, $"{message.Chat.FirstName} {message.Chat.LastName}");
-```
-
-### Поведенческие
-Решают задачи эффективного и безопасного взаимодействия между объектами программы.
-В проекте реализован паттерн Команда.
-
-[WeatherCommon.Services.Command](https://github.com/smirnoff410/weather-app/blob/oop/Lab3/WeatherCommon/Services/Command/ICommand.cs)
-
-Использование в проекте
-```csharp
-public class WeatherChangeAlertCommand : BaseCommand<WeatherChangeAlertRequest>
-{
-    private readonly ITelegramBotClient _botClient;
-
-    public WeatherChangeAlertCommand(ITelegramBotClient botClient, ILogger<WeatherChangeAlertCommand> logger) : base(logger)
-    {
-        _botClient = botClient;
-    }
-
-    public override async Task ExecuteCommand(WeatherChangeAlertRequest request)
-    {
-        await _botClient.SendTextMessageAsync(
-            chatId: request.ChatID,
-            text: request.Text);
-    }
-}
-```
-
-### Полезные ссылки
-https://refactoring.guru/ru/design-patterns/catalog - доступно с VPN
-
-https://metanit.com/sharp/patterns/
+9. Создайте Dockerfile для остальных своих сервисов и внесите их в файл docker-compose
