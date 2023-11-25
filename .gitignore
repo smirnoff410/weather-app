@@ -17,3 +17,7 @@ WeatherTelegramService/obj
 WeatherTelegramService/secrets.json
 WeatherDatabase/bin
 WeatherDatabase/obj
+WeatherApp.AppHost/bin
+WeatherApp.AppHost/obj
+WeatherApp.ServiceDefaults/bin
+WeatherApp.ServiceDefaults/obj

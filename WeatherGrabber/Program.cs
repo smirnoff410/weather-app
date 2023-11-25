@@ -16,6 +16,9 @@ namespace WeatherGrabber
             IHost host = Host.CreateDefaultBuilder(args)
                 .ConfigureServices((configuration, services) =>
                 {
+                    services.AddProblemDetails();
+                    services.ConfigureOpenTelemetryExporters();
+                    services.ConfigureOpenTelemetry();
                     services.AddSingleton<IWeatherGrabberMappingFactory, WeatherGrabberMappingFactory>();
                     services.AddHttpClient("weatherapi", client => client.BaseAddress = new Uri("https://api.weatherapi.com/v1/"));
                     services.AddSingleton<IWeatherClient, WeatherApiClient>();
