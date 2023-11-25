@@ -12,7 +12,8 @@
             var destinationType = typeof(TDestination);
             var mapper = _mapperList.FirstOrDefault(x => x.GetType()
                 .GetInterfaces()
-                .Any(c => c.GenericTypeArguments.Contains(sourceType) && c.GenericTypeArguments.Contains(destinationType)));
+                .Any(c => c.GenericTypeArguments.Contains(sourceType) && c.GenericTypeArguments.Contains(destinationType)
+                && c.GenericTypeArguments.First() == sourceType && c.GenericTypeArguments.Last() == destinationType));
             if (mapper == null)
                 throw new NullReferenceException($"Mapper with source type {sourceType} and {destinationType}");
             if(mapper is not IMapper<TSource, TDestination>)

@@ -20,7 +20,7 @@ namespace WeatherGrabber
                     services.AddHttpClient("weatherapi", client => client.BaseAddress = new Uri("https://api.weatherapi.com/v1/"));
                     services.AddSingleton<IWeatherClient, WeatherApiClient>();
                     services.Configure<ServiceSettings>(configuration.Configuration.GetSection("ServiceSettings"));
-                    services.AddSingleton<IMessageQueue, RabbitMessageQueue>();
+                    services.AddSingleton<IMessageQueue>(x => new RabbitMessageQueue(configuration.Configuration.GetSection("QueueSettings").GetSection("ConnectionString").Value));
 
                     services.AddDbContext<WeatherDatabaseContext>(options =>
                         options.UseSqlServer(configuration.Configuration.GetSection("DatabaseSettings").GetSection("ConnectionString").Value));

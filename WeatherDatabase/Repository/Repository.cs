@@ -26,6 +26,11 @@ namespace WeatherDatabase.Repository
                 _dbSet.Remove(deleted);
         }
 
+        public void Delete(T entity)
+        {
+            _dbSet.Remove(entity);
+        }
+
         public IQueryable<T> Get(Specification<T>? specification = null)
         {
             if(specification != null)

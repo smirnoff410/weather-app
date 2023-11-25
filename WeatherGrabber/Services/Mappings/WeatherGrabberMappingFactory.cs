@@ -8,6 +8,7 @@ namespace WeatherGrabber.Services.Mappings
         {
             _mapperList.Add(new ForecastDatabaseToForecastGrabberModelMap());
             _mapperList.Add(new ForecastHourToForecastGrabberModelMap());
+            _mapperList.Add(new ForecastGrabberModelToForecastMap());
         }
     }
 }

@@ -5,6 +5,7 @@
     {
         public GetForecastByCityIDSpecification(Guid cityID) : base(x => x.CityId == cityID && x.Date >= DateTime.UtcNow.Date)
         {
+            AddOrderBy(x => x.Date);
         }
     }
 }

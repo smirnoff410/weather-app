@@ -10,7 +10,6 @@ using WeatherTelegramService.Services.ServiceBuilder;
 using WeatherDatabase.Models;
 using WeatherDatabase.Repository;
 using WeatherDatabase;
-using Microsoft.Extensions.Options;
 using Microsoft.EntityFrameworkCore;
 
 namespace WeatherTelegramService
@@ -22,7 +21,7 @@ namespace WeatherTelegramService
             IHost host = Host.CreateDefaultBuilder(args)
                 .ConfigureServices((configuration, services) =>
                 {
-                    services.AddSingleton<IMessageQueue, RabbitMessageQueue>();
+                    services.AddSingleton<IMessageQueue>(x => new RabbitMessageQueue(configuration.Configuration.GetSection("QueueSettings").GetSection("ConnectionString").Value));
                     services.AddSingleton<ITelegramBotClient>(x => new TelegramBotClient(GetTelegramBotTokenFromSecrets()));
                     services.AddScoped<ITelegramReceiverService, TelegramReceiverService>();
                     services.AddScoped<ICommand<WeatherChangeAlertRequest>, WeatherChangeAlertCommand>();

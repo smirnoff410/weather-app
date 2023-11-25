@@ -11,11 +11,13 @@ namespace WeatherCommon.Services.MessageQueue
     {
         private readonly IModel _channel;
 
-        public RabbitMessageQueue()
+        public RabbitMessageQueue(string? connectionString)
         {
+            connectionString ??= "amqp://guest:guest@localhost:5672";
+
             var factory = new ConnectionFactory
             {
-                Uri = new Uri("amqp://guest:guest@localhost:5672")
+                Uri = new Uri(connectionString)
             };
 
             var connection = factory.CreateConnection();
