@@ -9,7 +9,7 @@ services:
     depends_on:
       - sqldata
     ports:
-      - "8000:80"
+      - "8000:8080"
   grabber:
     hostname: weather_grabber
     container_name: weather_grabber
