@@ -6,6 +6,8 @@ using WeatherDatabase;
 using WeatherDatabase.Models;
 using WeatherDatabase.Repository;
 using WeatherGrabber.Services.Mappings;
+using System.Text.Json;
+using WeatherTelegramService.Settings;
 
 namespace WeatherGrabber
 {
@@ -21,9 +23,11 @@ namespace WeatherGrabber
                     services.ConfigureOpenTelemetry();
                     services.AddSingleton<IWeatherGrabberMappingFactory, WeatherGrabberMappingFactory>();
                     services.AddHttpClient("weatherapi", client => client.BaseAddress = new Uri("https://api.weatherapi.com/v1/"));
-                    services.AddSingleton<IWeatherClient, WeatherApiClient>();
+                    services.AddSingleton<IWeatherClient>(x => new WeatherApiClient(x.GetRequiredService<IHttpClientFactory>(), GetWeatherApiKeyFromSecrets()));
                     services.Configure<ServiceSettings>(configuration.Configuration.GetSection("ServiceSettings"));
-                    services.AddSingleton<IMessageQueue>(x => new RabbitMessageQueue(configuration.Configuration.GetSection("QueueSettings").GetSection("ConnectionString").Value));
+                    services.AddSingleton<IMessageQueue>(x => 
+                        new RabbitMessageQueue(configuration.Configuration.GetSection("QueueSettings").GetSection("ConnectionString").Value,
+                        x.GetRequiredService<ILogger<IMessageQueue>>()));
 
                     services.AddDbContext<WeatherDatabaseContext>(options =>
                         options.UseSqlServer(configuration.Configuration.GetSection("DatabaseSettings").GetSection("ConnectionString").Value));
@@ -39,6 +43,15 @@ namespace WeatherGrabber
                 .Build();
 
             host.Run();
+        }
+        
+
+        private static string GetWeatherApiKeyFromSecrets()
+        {
+            var text = File.ReadAllText("secrets.json");
+            var content = JsonSerializer.Deserialize<SecretSettings>(text);
+
+            return content is null ? string.Empty : content.WeatherApiKey;
         }
     }
 }

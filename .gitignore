@@ -21,3 +21,5 @@ WeatherApp.AppHost/bin
 WeatherApp.AppHost/obj
 WeatherApp.ServiceDefaults/bin
 WeatherApp.ServiceDefaults/obj
+.vscode
+WeatherGrabber/secrets.json

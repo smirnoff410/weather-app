@@ -12,7 +12,7 @@ namespace WeatherGrabber.Services.Mappings
             {
                 Condition = forecast.condition.text,
                 Date = DateTime.Parse(forecast.time),
-                Temperature = forecast.temp_c
+                Temperature = Convert.ToInt32(forecast.temp_c)
             };
         }
     }

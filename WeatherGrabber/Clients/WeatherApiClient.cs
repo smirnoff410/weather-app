@@ -5,13 +5,14 @@ namespace WeatherGrabber.Clients
 {
     public class WeatherApiClient : IWeatherClient
     {
-        private readonly string _weatherApiKey = "f2681def0bc14b9da5d134125230610";
+        private readonly string _weatherApiKey;
 
         private readonly HttpClient _httpClient;
 
-        public WeatherApiClient(IHttpClientFactory httpClientFactory)
+        public WeatherApiClient(IHttpClientFactory httpClientFactory, string weatherApiKey)
         {
             _httpClient = httpClientFactory.CreateClient("weatherapi");
+            _weatherApiKey = weatherApiKey;
         }
 
         public async Task<ForecastDTO> GetForecast(string city)

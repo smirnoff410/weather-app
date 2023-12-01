@@ -54,9 +54,6 @@ namespace WeatherGrabber
                     var context = scope.ServiceProvider.GetRequiredService<WeatherDatabaseContext>();
 
                     var cities = await cityRepository.Get().Select(x => new { x.Id, x.Name }).ToListAsync(cancellationToken: stoppingToken);
-                    /*
-                     Get unique user cities from database
-                     */
 
                     var forecastToGrabberModelMapper = _mappingFactory.GetMapper<Forecast, ForecastGrabberModel>();
                     var forecastDtoToGrabberModelMapper = _mappingFactory.GetMapper<DTO.WeatherAPI.Hour, ForecastGrabberModel>();
@@ -70,7 +67,7 @@ namespace WeatherGrabber
                         var dbForecasts = forecasts.Select(forecastToGrabberModelMapper.Map);
 
                         var apiForecasts = result.forecast.forecastday.First().hour;
-                        var mapForecast = apiForecasts.Select(forecastDtoToGrabberModelMapper.Map);
+                        var mapForecast = apiForecasts.Where(x => Convert.ToDateTime(x.time) >= DateTime.UtcNow).Select(forecastDtoToGrabberModelMapper.Map);
 
                         var equal = dbForecasts.SequenceEqual(mapForecast);
 
@@ -78,7 +75,6 @@ namespace WeatherGrabber
                         {
                             var message = "Weather changed, look at the window!";
                             _messageQueue.Publish(MessageQueueRouteEnum.WeatherChangeAlert, new WeatherChangeAlertRequest(city.Id, message));
-                            _logger.LogInformation("Sending message to {0} queue", MessageQueueRouteEnum.WeatherChangeAlert);
 
                             foreach(var dbForecast in forecasts)
                             {
@@ -96,11 +92,6 @@ namespace WeatherGrabber
                             await context.SaveChangesAsync(stoppingToken);
                         }
                     }
-
-                    /*
-                     Get forecast from database and compare with api
-                    if they not equal -> save new forecast to database and send message to telegram service
-                     */
 
                     await Task.Delay(TimeSpan.FromMinutes(_serviceSettings.WorkerIntervalMinutes), stoppingToken);
                 }

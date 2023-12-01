@@ -21,7 +21,9 @@ namespace WeatherTelegramService
             IHost host = Host.CreateDefaultBuilder(args)
                 .ConfigureServices((configuration, services) =>
                 {
-                    services.AddSingleton<IMessageQueue>(x => new RabbitMessageQueue(configuration.Configuration.GetSection("QueueSettings").GetSection("ConnectionString").Value));
+                    services.AddSingleton<IMessageQueue>(x => new RabbitMessageQueue(
+                        configuration.Configuration.GetSection("QueueSettings").GetSection("ConnectionString").Value, 
+                        x.GetRequiredService<ILogger<IMessageQueue>>()));
                     services.AddSingleton<ITelegramBotClient>(x => new TelegramBotClient(GetTelegramBotTokenFromSecrets()));
                     services.AddScoped<ITelegramReceiverService, TelegramReceiverService>();
                     services.AddScoped<ICommand<WeatherChangeAlertRequest>, WeatherChangeAlertCommand>();
