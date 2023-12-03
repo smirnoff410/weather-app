@@ -18,13 +18,13 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
     - name: Install dependencies
-      run: cd src && dotnet restore
+      run: dotnet restore
       
     - name: Build
-      run: cd src && dotnet build --configuration Release --no-restore
+      run: dotnet build --configuration Release --no-restore
       
     - name: Test
-      run: cd src && dotnet test --no-restore --verbosity normal
+      run: dotnet test --no-restore --verbosity normal
   deploy:
     needs: build-and-test
     name: Deploy
