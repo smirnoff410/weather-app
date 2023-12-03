@@ -18,7 +18,9 @@ jobs:
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
     - name: Test
-      run: dotnet test --no-restore --verbosity normal ~/WeatherTests/WeatherTests.csproj
+      run: ls
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal ./WeatherTests/WeatherTests.csproj
   deploy:
     needs: build-and-test
     name: Deploy
