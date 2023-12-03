@@ -19,7 +19,6 @@
   <ItemGroup>
     <ProjectReference Include="..\WeatherCommon\WeatherCommon.csproj" />
     <ProjectReference Include="..\WeatherDatabase\WeatherDatabase.csproj" />
-    <ProjectReference Include="..\WeatherApp.ServiceDefaults\WeatherApp.ServiceDefaults.csproj" />
   </ItemGroup>
 
 </Project>
