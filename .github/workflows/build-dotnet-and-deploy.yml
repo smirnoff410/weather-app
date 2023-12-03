@@ -1,0 +1,51 @@
+name: "Dotnet CI"
+on:
+  push:
+    branches: ["feature/Lab7"]
+  pull_request:
+    branches: ["feature/Lab7"]
+    
+env:
+  DOTNET_VERSION: '8.0.100' # The .NET SDK version to use
+jobs:
+  build-and-test:
+    name: build-and-test
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+    - name: Install dependencies
+      run: cd src && dotnet restore
+      
+    - name: Build
+      run: cd src && dotnet build --configuration Release --no-restore
+      
+    - name: Test
+      run: cd src && dotnet test --no-restore --verbosity normal
+  deploy:
+    needs: build-and-test
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v0.1.10
+      env:
+        PASSWORD: ${{ secrets.PASSWORD }}
+      with:
+        host: "cluster.vstu.ru:57322"
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        envs: PASSWORD
+        script: |
+          cd weather-app
+          git checkout feature/Lab7
+          git pull
+          echo $PASSWORD | sudo -S podman stop weather_backend
+          echo $PASSWORD | sudo -S podman rm weather_backend
+          echo $PASSWORD | sudo -S podman rmi weather_backend_image
+          echo $PASSWORD | sudo -S podman build -f WeatherBackend/Dockerfile -t weather_backend_image .
+          echo $PASSWORD | sudo -S podman run -p 64001:8080 --name weather_backend -d weather_backend_image
+          
