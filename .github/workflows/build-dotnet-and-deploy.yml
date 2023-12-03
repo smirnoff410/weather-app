@@ -28,20 +28,17 @@ jobs:
     steps:
     - name: executing remote ssh commands using password
       uses: appleboy/ssh-action@v0.1.10
-      env:
-        PASSWORD: ${{ secrets.PASSWORD }}
       with:
         host: "cluster.vstu.ru:57322"
         username: ${{ secrets.USERNAME }}
         password: ${{ secrets.PASSWORD }}
-        envs: PASSWORD
         script: |
           cd weather-app
           git checkout feature/Lab7
           git pull
-          echo $PASSWORD | sudo -S podman stop weather_backend
-          echo $PASSWORD | sudo -S podman rm weather_backend
-          echo $PASSWORD | sudo -S podman rmi weather_backend_image
-          echo $PASSWORD | sudo -S podman build -f WeatherBackend/Dockerfile -t weather_backend_image .
-          echo $PASSWORD | sudo -S podman run -p 64001:8080 --name weather_backend -d weather_backend_image
+          podman stop weather_backend
+          podman rm weather_backend
+          podman rmi weather_backend_image
+          podman build -f WeatherBackend/Dockerfile -t weather_backend_image .
+          podman run -p 64001:8080 --name weather_backend -d weather_backend_image
           
