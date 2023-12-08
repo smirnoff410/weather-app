@@ -37,6 +37,10 @@ username: ${{ secrets.USERNAME }}
 password: ${{ secrets.PASSWORD }}
 ```
 
+Для аутентификации на кластере можно использовать одного из 8 пользователей:
+- login: user0-user7
+- password: userIntelCuda0-userIntelCuda7
+
 > Чтобы не светить свой пароль в открытых источниках, можно поместить его в раздел github secrets (Settings -> Secrets and variables -> Actions -> New repository secret).
 
 4. Наполнить инструкции для деплоя при подключении по ssh. В данном примере через git затягиваются последнии изменения, останавливается и удаляется `podman` контейнер, удаляется образ и создается заново
