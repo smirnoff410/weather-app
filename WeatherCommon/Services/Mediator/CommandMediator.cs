@@ -15,7 +15,7 @@ namespace WeatherCommon.Services.Mediator
         public async Task<HttpResponse> Dispatch<TRequest, TResponse>(TRequest request)
         {
             Type type = typeof(ICommand<,>);
-            Type[] typeArgs = { request.GetType(), typeof(TResponse) };
+            Type[] typeArgs = [typeof(TRequest), typeof(TResponse)];
             Type handlerType = type.MakeGenericType(typeArgs);
 
             dynamic handler = _serviceProvider.GetRequiredService(handlerType);

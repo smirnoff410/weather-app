@@ -7,31 +7,25 @@ namespace WeatherBackend.City.Command
     using WeatherDatabase.Models;
     using WeatherCommon.Models.Request;
     using WeatherDatabase.Repository;
+    using WeatherCommon.Services.Mapping;
 
     public class GetCitiesCommand : BaseHttpCommand<GetEntitiesRequest, ICollection<CityResponseItem>>
     {
         private readonly IRepository<City> _cityRepository;
+        private readonly IMappingFactory _mapperFactory;
 
-        public GetCitiesCommand(IRepository<City> cityRepository, ILogger<GetCitiesCommand> logger) : base(logger)
+        public GetCitiesCommand(IRepository<City> cityRepository, IMappingFactory mapperFactory, ILogger<GetCitiesCommand> logger) : base(logger)
         {
             _cityRepository = cityRepository;
+            _mapperFactory = mapperFactory;
         }
 
         public override async Task<ICollection<CityResponseItem>> ExecuteResponse(GetEntitiesRequest request)
         {
             var cities = await _cityRepository.Get().ToListAsync();
 
-            var result = new List<CityResponseItem>();
-            foreach (var city in cities) 
-            {
-                result.Add(new CityResponseItem
-                {
-                    ID = city.Id,
-                    Name = city.Name
-                });
-            }
-
-            return result;
+            var translator = _mapperFactory.GetMapper<City, CityResponseItem>();
+            return cities.Select(translator.Map).ToList();
         }
     }
 }
