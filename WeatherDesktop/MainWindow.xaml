@@ -3,12 +3,18 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:WeatherDesktop"
+        xmlns:local="clr-namespace:WeatherDesktop" 
+        xmlns:Views="clr-namespace:WeatherDesktop.Views"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <StackPanel>
-        <ListBox x:Name="WeatherList">
-        </ListBox>
-        <Button x:Name="ShowWeather" Width="100" Height="30" Content="Показать погоду" Click="ShowWeather_Click"></Button>
-    </StackPanel>
+    <Grid>
+        <TabControl>
+            <TabItem x:Name="tab_users" Header="Пользователи" Visibility="Visible">
+                <Views:UserView/>
+            </TabItem>
+            <TabItem x:Name="tab_cities" Header="Города" Visibility="Visible">
+                <Views:CityView/>
+            </TabItem>
+        </TabControl>
+    </Grid>
 </Window>

@@ -26,19 +26,5 @@ namespace WeatherDesktop
         {
             InitializeComponent();
         }
-
-        private async void ShowWeather_Click(object sender, RoutedEventArgs e)
-        {
-            var httpClient = new HttpClient();
-            var result = await httpClient.GetFromJsonAsync<ICollection<WeatherDTO>>("http://localhost:5000/weatherforecast");
-            if(result == null)
-            {
-                MessageBox.Show("Данные о погоде пусты");
-                return;
-            }
-            WeatherList.Items.Clear();
-            foreach (var weather in result)
-                WeatherList.Items.Add(weather);
-        }
     }
 }
