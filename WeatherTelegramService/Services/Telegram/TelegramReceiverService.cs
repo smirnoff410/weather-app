@@ -4,6 +4,7 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using WeatherTelegramService.Services.FollowCityFacade;
+using Telegram.Bot.Types.ReplyMarkups;
 
 namespace WeatherTelegramService.Services.Telegram
 {
@@ -53,12 +54,39 @@ namespace WeatherTelegramService.Services.Telegram
                 var chatId = message.Chat.Id;
                 _logger.LogInformation($"Received a '{messageText}' message in chat {chatId}.");
 
-                if (messageText == "/start")
+                if(messageText == "/city")
                 {
-                    // Echo received message text
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[]
+                    {
+                        new KeyboardButton[] { "Volgograd 🗿" },
+                        new KeyboardButton[] { "Moscow 🇷🇺" },
+                        new KeyboardButton[] { "Saint Petersburg 🏰" }
+                    })
+                    {
+                        ResizeKeyboard = true
+                    };
                     Message sentMessage = await botClient.SendTextMessageAsync(
                         chatId: chatId,
                         text: "Please enter city for subscribe forecast",
+                        replyMarkup: replyKeyboardMarkup,
+                        cancellationToken: cancellationToken);
+                    return;
+                }
+                if(messageText == "/category")
+                {
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[]
+                    {
+                        new KeyboardButton[] { "Car 🚗" },
+                        new KeyboardButton[] { "Sport 🏃🏻" },
+                        new KeyboardButton[] { "Tourism 🗺️" }
+                    })
+                    {
+                        ResizeKeyboard = true
+                    };
+                    Message sentMessage = await botClient.SendTextMessageAsync(
+                        chatId: chatId,
+                        text: "Please enter category for subscribe recommendations",
+                        replyMarkup: replyKeyboardMarkup,
                         cancellationToken: cancellationToken);
                     return;
                 }
